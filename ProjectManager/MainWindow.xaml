@@ -1,0 +1,39 @@
+﻿<Window x:Class="ProjectManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProjectManager"
+        xmlns:helper="clr-namespace:ProjectManager.Helpers"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="650" Width="525">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Project Manager" VerticalAlignment="Top" Height="16"/>
+        <TextBlock x:Name="textBlock1" Margin="0,0,10,10" TextWrapping="Wrap" Text="{Binding Mode=OneWay, Source={StaticResource VersionNumber}}" HorizontalAlignment="Right" Height="16" VerticalAlignment="Bottom" Width="25"/>
+        <StackPanel Height="20" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="140" Orientation="Horizontal" HorizontalAlignment="Left">
+            <Button x:Name="LoadButton" Content="Load File" Click="LoadButton_Click" Margin="0,0,5,0"/>
+            <Button x:Name="WriteButton" Content="Save File" Margin="5,0,0,0" Click="WriteButton_Click"/>
+        </StackPanel>
+        <StackPanel x:Name="Seznam" Margin="10,115,10,35">
+            <Grid Height="40" x:Name="ZakladniKarta" Margin="0" helper:MistoKartyVHierarchii.UrovenKarty="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="10"/>
+                </Grid.RowDefinitions>
+                <TextBox x:Name="StandartPopisek" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="Popisek" VerticalAlignment="Center" Grid.Row="1" BorderThickness="0"/>
+                <Button x:Name="StandartSmazat" Content="X" Margin="0,0,40,0" Grid.Row="1" HorizontalAlignment="Right" Padding="1" Width="20" Click="Smazat_polozku"/>
+                <Button x:Name="StandartPridat" Content="+" HorizontalAlignment="Right" Margin="0,0,10,0" Grid.Row="1" Padding="1" Width="20" Click="Pridat_polozku"/>
+                <Rectangle x:Name="StandartLabel" Fill="#FF75B9E8" Height="4" VerticalAlignment="Top" Width="80" HorizontalAlignment="Left" Margin="10,0,0,0" MouseEnter="PrejetiLabeluOn" 
+                           MouseLeave="PrejetiLabeluOff" MouseLeftButtonDown="ZmenaBarvyLabelu" helper:LabelColorNumbers.ColorNumber="None" Stroke="#66000000"/>
+                <Button x:Name="StandartDoleva" Content="&lt;" Margin="0,0,100,0" Grid.Row="1" HorizontalAlignment="Right" Padding="1" Width="20" Click="PresunNahoru"/>
+                <Button x:Name="StandartDoprava" Content="&gt;" HorizontalAlignment="Right" Margin="0,0,70,0" Grid.Row="1" Padding="1" Width="20" Click="PresunDolu"/>
+
+            </Grid>
+        </StackPanel>
+
+    </Grid>
+</Window>
