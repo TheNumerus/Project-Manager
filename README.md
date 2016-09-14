@@ -1,11 +1,11 @@
 # Project-Manager
 A simple project manager.
 
-Current version is 0.1.4
+##Current version is 0.1.4
 
 
 
-0.2 Release - Target 25.9.2016
+##0.2 Release - Target 25.9.2016
 
 About window
 - actual version of program
@@ -21,7 +21,7 @@ New functions
 Main window
 - Scrollbar
 
-Future releases (0.3+)
+##Future releases (0.3+)
 
 New functions
 - Window with card name, date of creation/edit and description
