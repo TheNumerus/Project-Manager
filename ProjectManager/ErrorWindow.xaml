@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProjectManager"
         mc:Ignorable="d"
-        Title="Error" Height="91.597" Width="300" Topmost="True" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen">
+        Title="Error" Height="91.597" Width="300" Topmost="True" HorizontalAlignment="Center" VerticalAlignment="Center" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Grid>
         <TextBlock x:Name="ErrorMessage" HorizontalAlignment="Center" Margin="0" TextWrapping="Wrap" Text="Tohle by nemělo být vidět :D" VerticalAlignment="Center" TextAlignment="Center"/>
 
