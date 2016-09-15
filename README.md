@@ -21,8 +21,17 @@ A simple project manager.
 - Modified colors of labels
 
 ##Roadmap
-##Future releases (0.3+)
+##0.3 Release (Target 30.9.2016)
 
 New functions
 - Window with card name, date of creation/edit and description
 - Support for more projects
+- User defined label colors
+- Better sorting
+
+## Future releases (0.4+)
+
+New functions
+- Drag & drop sorting
+- Library of recent projects
+- and more
