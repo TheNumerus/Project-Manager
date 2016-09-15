@@ -117,7 +117,7 @@ namespace ProjectManager
             NahraniDoSeznamu(data);
             sr.Close();
             databaze.Close();
-            ProjectName.Name = data.nazev;
+            ProjectName.Text = data.nazev;
         }
         //aby bylo podporovano nahrani deti, musi existovat rekurzivni funkce
         public void NahraniDoSeznamu(Data data) {
