@@ -33,6 +33,11 @@ namespace ProjectManager
             Seznam.Children.Add(novaKarta);
             //zakladni karta je neviditelna aby nesla smazat a upravit
             ZakladniKarta.Visibility = Visibility.Collapsed;
+            //pokud uzivatel chce, muze aplikace nacitst data pri startu
+            if (Properties.Settings.Default.LoadOnStart) {
+                Promazani();
+                Nacteni();
+            }
         }
         //Metody pro zjednoduseni event handleru a pro mozne pouziti ve vice eventech
 
@@ -293,6 +298,17 @@ namespace ProjectManager
                 staryMargin.Left = (MistoKartyVHierarchii.GetUrovenKarty(karta)-1) * 20;
             }
             karta.Margin = staryMargin;
+        }
+        //event pro otevreni about okna
+        private void OpenAboutWindow(object sender, RoutedEventArgs e) {
+            AboutWindow aw = new AboutWindow();
+            aw.Show();
+        }
+        //open settings window
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsWindow sw = new SettingsWindow();
+            sw.Show();
         }
     }
 }

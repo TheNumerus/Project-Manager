@@ -1,0 +1,18 @@
+﻿<Window x:Class="ProjectManager.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProjectManager"
+        mc:Ignorable="d"
+        Title="About" Height="150.42" Width="300" ShowInTaskbar="False" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Label x:Name="ProgramName" HorizontalAlignment="Center" Margin="0,10,0,0" Content="Project Manager" VerticalAlignment="Top" FontSize="20"/>
+        <StackPanel HorizontalAlignment="Center" Margin="0,0,0,10" VerticalAlignment="Bottom" Orientation="Horizontal">
+            <TextBlock x:Name="textBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Version: " VerticalAlignment="Top"/>
+            <TextBlock x:Name="VersionNumberBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="{DynamicResource VersionNumber}" VerticalAlignment="Top"/>
+        </StackPanel>
+        <TextBlock x:Name="textBlock1" HorizontalAlignment="Center" Margin="0,68,0,0" TextWrapping="Wrap" Text="Created by: Petr Volf" VerticalAlignment="Top"/>
+
+    </Grid>
+</Window>
