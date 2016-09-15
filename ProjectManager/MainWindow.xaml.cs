@@ -112,6 +112,7 @@ namespace ProjectManager
             NahraniDoSeznamu(data);
             sr.Close();
             databaze.Close();
+            ProjectName.Name = data.nazev;
         }
         //aby bylo podporovano nahrani deti, musi existovat rekurzivni funkce
         public void NahraniDoSeznamu(Data data) {
@@ -163,7 +164,7 @@ namespace ProjectManager
             }
             StreamWriter sw = new StreamWriter(databaze);
             XmlSerializer xs = new XmlSerializer(typeof(Data));
-            Data data = new Data("Seznam",LabelColors.None,0);
+            Data data = new Data(ProjectName.Text,LabelColors.None,0);
             //tahle promenna je kvuli tomu, aby se bylo mozno odkazat na predchozi misto ulozeni do datove struktury
             Data mistoNaUlozeni = data;
             for (int i = 0; i < Seznam.Children.Count; i++)

@@ -26,6 +26,6 @@ namespace ProjectManager.Helpers
         Green,
         Yellow };
     public static class LabelColorValues {
-        public static Color[] barva = {Color.FromArgb(0,0,0,0),Colors.Red,Colors.Blue,Colors.Green,Colors.Yellow};
+        public static Color[] barva = {Color.FromArgb(0,0,0,0),Colors.Firebrick,Colors.SteelBlue,Colors.YellowGreen,Colors.Gold};
     }
 }
