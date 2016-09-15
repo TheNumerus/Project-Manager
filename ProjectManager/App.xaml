@@ -6,7 +6,7 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
 
-        <System:String x:Key="VersionNumber">0.1.4</System:String>
+        <System:String x:Key="VersionNumber">0.1.5</System:String>
         <System:String x:Key="PathToFile">databaze.xml</System:String>
 
     </Application.Resources>

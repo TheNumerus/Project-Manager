@@ -32,7 +32,7 @@ namespace ProjectManager
             PridaniKarty(out novaKarta);
             Seznam.Children.Add(novaKarta);
             //zakladni karta je neviditelna aby nesla smazat a upravit
-            ZakladniKarta.Visibility = Visibility.Hidden;
+            ZakladniKarta.Visibility = Visibility.Collapsed;
         }
         //Metody pro zjednoduseni event handleru a pro mozne pouziti ve vice eventech
 
@@ -73,6 +73,20 @@ namespace ProjectManager
                 errorwindow.Title = "Soubor neexistuje";
                 errorwindow.ErrorMessage.Text = "Chyba! Soubor neexistuje.";
                 errorwindow.Show();
+                Grid novaKarta = new Grid();
+                PridaniKarty(out novaKarta);
+                Seznam.Children.Add(novaKarta);
+                return;
+            }
+            catch (System.UnauthorizedAccessException)
+            {
+                ErrorWindow errorwindow = new ErrorWindow();
+                errorwindow.Title = "Nedostatečná práva";
+                errorwindow.ErrorMessage.Text = "Chyba! Program nemá potřebná práva pro načtení souboru.";
+                errorwindow.Show();
+                Grid novaKarta = new Grid();
+                PridaniKarty(out novaKarta);
+                Seznam.Children.Add(novaKarta);
                 return;
             }
             StreamReader sr = new StreamReader(databaze);
@@ -88,6 +102,9 @@ namespace ProjectManager
                 errorwindow.Title = "XML Error";
                 errorwindow.ErrorMessage.Text = "Chyba! Soubor s databází je poškozen.";
                 errorwindow.Show();
+                Grid novaKarta = new Grid();
+                PridaniKarty(out novaKarta);
+                Seznam.Children.Add(novaKarta);
                 sr.Close();
                 databaze.Close();
                 return;
@@ -163,7 +180,7 @@ namespace ProjectManager
                 }
                 Grid karta = (Grid)Seznam.Children[i];
                 TextBox nazevKarty = (TextBox)karta.Children[0];
-                if (karta.Visibility != Visibility.Hidden) 
+                if (karta.Visibility != Visibility.Collapsed) 
                 {
                     //pokud je misto karty v hierarchii mensi nez karty nad ni, ulozi se karta do "deti" predchozi karty
                     if (MistoKartyVHierarchii.GetUrovenKarty((Grid)Seznam.Children[i - 1]) < MistoKartyVHierarchii.GetUrovenKarty((Grid)Seznam.Children[i]))
