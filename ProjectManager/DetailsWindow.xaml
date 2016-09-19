@@ -1,0 +1,16 @@
+﻿<Window x:Class="ProjectManager.DetailsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProjectManager"
+        xmlns:helper="clr-namespace:ProjectManager.Helpers"
+        mc:Ignorable="d"
+        Title="DetailsWindow" Height="163.866" Width="360" ResizeMode="NoResize" Topmost="True" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <TextBox x:Name="nameBox" Text="CardName" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" TextChanged="NameChanged_Event"/>
+        <TextBox x:Name="descBox" Height="69" Margin="10,38,10,0" TextWrapping="Wrap" Text="Description" VerticalAlignment="Top" BorderBrush="{x:Null}"/>
+        <Rectangle x:Name="LabelRect" Fill="#00000000" Margin="10,0,10,10" Stroke="#33000000" Height="12" VerticalAlignment="Bottom" helper:LabelColorNumbers.ColorNumber="None" MouseDown="LabelChange_Event"/>
+
+    </Grid>
+</Window>

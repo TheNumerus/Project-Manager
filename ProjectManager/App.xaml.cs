@@ -14,6 +14,6 @@ namespace ProjectManager
     /// </summary>
     public partial class Application : System.Windows.Application
     {
-
+        
     }
 }

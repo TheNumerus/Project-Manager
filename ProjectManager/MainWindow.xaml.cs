@@ -36,7 +36,14 @@ namespace ProjectManager
             //pokud uzivatel chce, muze aplikace nacitst data pri startu
             if (Properties.Settings.Default.LoadOnStart) {
                 Promazani();
-                Nacteni();
+                if (!RuntimeData.Load())
+                {
+                    novaKarta = new Grid();
+                    PridaniKarty(out novaKarta);
+                    Seznam.Children.Add(novaKarta);
+                }
+                NahraniDoSeznamu(RuntimeData.runtimeData);
+                ProjectName.Text = RuntimeData.runtimeData.nazev;
             }
         }
         //Metody pro zjednoduseni event handleru a pro mozne pouziti ve vice eventech
@@ -56,6 +63,8 @@ namespace ProjectManager
             ((Rectangle)novaKarta.Children[3]).MouseDown += ZmenaBarvyLabelu;
             ((Button)novaKarta.Children[4]).Click += PresunNahoru;
             ((Button)novaKarta.Children[5]).Click += PresunDolu;
+            //add event to open detail window
+            novaKarta.MouseDown += OpenDetailsWindow_Event;
             //zakladni karta je neviditelna, takze jeji kopie se musi zviditelnit
             novaKarta.Visibility = Visibility.Visible;
         }
@@ -64,60 +73,6 @@ namespace ProjectManager
             for (int i = Seznam.Children.Count; i > 1; i--) {
                 Seznam.Children.RemoveAt(i-1);
             }
-        }
-        public void Nacteni() {
-            String cesta = Application.Current.FindResource("PathToFile").ToString();
-            //nacteni souboru
-            FileStream databaze;
-            try
-            {
-                databaze = File.Open(cesta, FileMode.Open);
-            }
-            catch (System.IO.FileNotFoundException) {
-                ErrorWindow errorwindow = new ErrorWindow();
-                errorwindow.Title = "Soubor neexistuje";
-                errorwindow.ErrorMessage.Text = "Chyba! Soubor neexistuje.";
-                errorwindow.Show();
-                Grid novaKarta = new Grid();
-                PridaniKarty(out novaKarta);
-                Seznam.Children.Add(novaKarta);
-                return;
-            }
-            catch (System.UnauthorizedAccessException)
-            {
-                ErrorWindow errorwindow = new ErrorWindow();
-                errorwindow.Title = "Nedostatečná práva";
-                errorwindow.ErrorMessage.Text = "Chyba! Program nemá potřebná práva pro načtení souboru.";
-                errorwindow.Show();
-                Grid novaKarta = new Grid();
-                PridaniKarty(out novaKarta);
-                Seznam.Children.Add(novaKarta);
-                return;
-            }
-            StreamReader sr = new StreamReader(databaze);
-            XmlSerializer xs = new XmlSerializer(typeof(Data));
-            Data data = new Data();
-            //osetreni vadneho souboru
-            try
-            {
-                data = (Data)xs.Deserialize(sr);
-            }
-            catch(System.InvalidOperationException) {
-                ErrorWindow errorwindow = new ErrorWindow();
-                errorwindow.Title = "XML Error";
-                errorwindow.ErrorMessage.Text = "Chyba! Soubor s databází je poškozen.";
-                errorwindow.Show();
-                Grid novaKarta = new Grid();
-                PridaniKarty(out novaKarta);
-                Seznam.Children.Add(novaKarta);
-                sr.Close();
-                databaze.Close();
-                return;
-            }
-            NahraniDoSeznamu(data);
-            sr.Close();
-            databaze.Close();
-            ProjectName.Text = data.nazev;
         }
         //aby bylo podporovano nahrani deti, musi existovat rekurzivni funkce
         public void NahraniDoSeznamu(Data data) {
@@ -226,7 +181,15 @@ namespace ProjectManager
         private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
             Promazani();
-            Nacteni();
+            //Nacteni();
+            if (!RuntimeData.Load())
+            {
+                Grid novaKarta = new Grid();
+                PridaniKarty(out novaKarta);
+                Seznam.Children.Add(novaKarta);
+            }
+            NahraniDoSeznamu(RuntimeData.runtimeData);
+            ProjectName.Text = RuntimeData.runtimeData.nazev;
         }
 
         private void WriteButton_Click(object sender, RoutedEventArgs e)
@@ -267,11 +230,8 @@ namespace ProjectManager
         }
         //cyklicka zmena barvy labelu
         private void ZmenaBarvyLabelu(object sender, MouseButtonEventArgs e)
-        {         
-            LabelColors soucasneCislo = LabelColorNumbers.GetColorNumber((UIElement)sender);
-            LabelColors noveCislo = (int)soucasneCislo > 3 ? 0 : soucasneCislo + 1;
-            LabelColorNumbers.SetColorNumber((UIElement)sender,noveCislo);
-            ((Rectangle)sender).Fill = new SolidColorBrush(LabelColorValues.barva[(int)noveCislo]);
+        {
+            LabelColorNumbers.LabelColorChange((Rectangle)sender,1);
         }
         //zajisteni presunu nahoru a dolu
         private void PresunNahoru(object sender, RoutedEventArgs e)
@@ -311,6 +271,20 @@ namespace ProjectManager
         {
             SettingsWindow sw = new SettingsWindow();
             sw.Show();
+        }
+        //open details window
+        private void OpenDetailsWindow_Event(object sender, MouseButtonEventArgs e)
+        {
+            //Ensure that the event is double-click
+            if (e.ClickCount == 2)
+            {
+                //open window and set parameters
+                DetailsWindow detWin = new DetailsWindow();
+                detWin.AddCardInfo((Grid)sender);
+                detWin.Show();
+                //set focus to newly opened window
+                detWin.Focus();
+            }
         }
     }
 }
