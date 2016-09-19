@@ -238,7 +238,9 @@ namespace ProjectManager
         {
             Grid Karta = new Grid();
             PridaniKarty(out Karta);
-            Seznam.Children.Add(Karta);
+            //zjisti poradove cislo tlacitka ktere vyslalo event
+            int cisloKarty = Seznam.Children.IndexOf((Grid)((Button)sender).Parent);
+            Seznam.Children.Insert(cisloKarty + 1, Karta);
         }
 
         private void Smazat_polozku(object sender, RoutedEventArgs e)
