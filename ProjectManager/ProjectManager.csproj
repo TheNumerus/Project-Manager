@@ -116,7 +116,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MistoKartyVHierarchii.cs" />
+    <Compile Include="CardHierarchy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

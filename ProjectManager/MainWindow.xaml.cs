@@ -98,84 +98,14 @@ namespace ProjectManager
             //nastaveni barevnych labelu
             Rectangle LabelNew = (Rectangle)(novaKarta.Children[3]);
             LabelColorNumbers.SetColorNumber(LabelNew, data.labelColor);
-            MistoKartyVHierarchii.SetUrovenKarty(novaKarta, data.pozice);
+            CardHierarchy.SetCardLevel(novaKarta, data.pozice);
             LabelNew.Fill = new SolidColorBrush(LabelColorValues.barva[(int)data.labelColor]);
             //nastaveni marginu podle urovne karty
             Thickness marginNew = novaKarta.Margin;
-            marginNew.Left = (MistoKartyVHierarchii.GetUrovenKarty(novaKarta) - 1) * 20;
+            marginNew.Left = (CardHierarchy.GetCardLevel(novaKarta) - 1) * 20 + 5;
             novaKarta.Margin = marginNew;
             //pridani karty do seznamu
             Seznam.Children.Add(novaKarta);
-        }
-        public void Ulozeni() {
-            String cesta = Application.Current.FindResource("PathToFile").ToString();
-            FileStream databaze;
-            //osetreni chybejicim pravum k zapisu souboru
-            try
-            {
-                databaze = File.Open(cesta, FileMode.Create);
-            }
-            catch (System.UnauthorizedAccessException) {
-                ErrorWindow errorwindow = new ErrorWindow();
-                errorwindow.Title = "Nedostatečná práva";
-                errorwindow.ErrorMessage.Text = "Chyba! Program nemá potřebná práva pro uložení souboru.";
-                errorwindow.Show();
-                return;
-            }
-            StreamWriter sw = new StreamWriter(databaze);
-            XmlSerializer xs = new XmlSerializer(typeof(Data));
-            Data data = new Data(ProjectName.Text,LabelColors.None,0);
-            //tahle promenna je kvuli tomu, aby se bylo mozno odkazat na predchozi misto ulozeni do datove struktury
-            Data mistoNaUlozeni = data;
-            for (int i = 0; i < Seznam.Children.Count; i++)
-            {
-                //zajisteni,ze karta nad existuje
-                Grid kartaNad = new Grid();
-                if (i != 0)
-                {
-                    kartaNad = (Grid)Seznam.Children[i - 1];
-                }
-                //pokud ne, tak se nastavi standartni misto v hierarchii
-                else {
-                    MistoKartyVHierarchii.SetUrovenKarty(kartaNad, 1);
-                }
-                Grid karta = (Grid)Seznam.Children[i];
-                TextBox nazevKarty = (TextBox)karta.Children[0];
-                if (karta.Visibility != Visibility.Collapsed) 
-                {
-                    //pokud je misto karty v hierarchii mensi nez karty nad ni, ulozi se karta do "deti" predchozi karty
-                    if (MistoKartyVHierarchii.GetUrovenKarty((Grid)Seznam.Children[i - 1]) < MistoKartyVHierarchii.GetUrovenKarty((Grid)Seznam.Children[i]))
-                    {
-                        mistoNaUlozeni = mistoNaUlozeni.Karty[mistoNaUlozeni.Karty.Count-1];
-                    }
-                    //pokud je misto karty v hierarchii vetsi nez karty nad ni, ulozi se karta o uroven vys
-                    else if (MistoKartyVHierarchii.GetUrovenKarty((Grid)Seznam.Children[i - 1]) > MistoKartyVHierarchii.GetUrovenKarty((Grid)Seznam.Children[i]))
-                    {
-                        //vyhledani mista pro ulozeni
-                        mistoNaUlozeni = nalezeniMistaProUlozeni(data,mistoNaUlozeni);
-                    }
-                    //pokud je misto karty v hierarchii stejne jako v karte nad ni, ulozi se karta na stejne misto
-                    mistoNaUlozeni.Karty.Add(new Data(nazevKarty.Text, LabelColorNumbers.GetColorNumber((Rectangle)karta.Children[3]), MistoKartyVHierarchii.GetUrovenKarty(karta)));
-                }
-            }
-            xs.Serialize(sw, data);
-            sw.Close();
-            databaze.Close();
-        }
-        //rekurzivni hledani nadrizeneho mista pro ulozeni
-        public Data nalezeniMistaProUlozeni(Data koren,Data diteHledaneho) {
-            Data nalezenyPrvek = null;
-            foreach (Data d in koren.Karty) {
-                if (d.Equals(diteHledaneho))
-                {
-                    nalezenyPrvek = koren;
-                    break;
-                }
-                else {
-                    nalezenyPrvek = nalezeniMistaProUlozeni(d, diteHledaneho);
-                }
-            }
-            return nalezenyPrvek;
         }
         //eventy pro tlacitka
         private void LoadButton_Click(object sender, RoutedEventArgs e)
@@ -194,7 +124,8 @@ namespace ProjectManager
 
         private void WriteButton_Click(object sender, RoutedEventArgs e)
         {
-            Ulozeni();
+            RuntimeData.Generate(Seznam,ProjectName);
+            RuntimeData.Save();
         }
 
         private void Pridat_polozku(object sender, RoutedEventArgs e)
@@ -240,10 +171,10 @@ namespace ProjectManager
             int pozice = Seznam.Children.IndexOf((UIElement)tlacitko.Parent);
             Grid karta = (Grid)Seznam.Children[pozice];
             Thickness staryMargin = (karta).Margin;
-            if (MistoKartyVHierarchii.GetUrovenKarty(karta) > 1)
+            if (CardHierarchy.GetCardLevel(karta) > 1)
             {
-                MistoKartyVHierarchii.SetUrovenKarty(karta, MistoKartyVHierarchii.GetUrovenKarty(karta) - 1);
-                staryMargin.Left = (MistoKartyVHierarchii.GetUrovenKarty(karta)-1) * 20;
+                CardHierarchy.SetCardLevel(karta, CardHierarchy.GetCardLevel(karta) - 1);
+                staryMargin.Left = (CardHierarchy.GetCardLevel(karta)-1) * 20 + 5;
             }
             karta.Margin = staryMargin;
         }
@@ -254,10 +185,10 @@ namespace ProjectManager
             Grid karta = (Grid)Seznam.Children[pozice];
             Grid kartaNad = (Grid)Seznam.Children[pozice-1];
             Thickness staryMargin = (karta).Margin;
-            if (MistoKartyVHierarchii.GetUrovenKarty(karta) < 4 && MistoKartyVHierarchii.GetUrovenKarty(karta) - MistoKartyVHierarchii.GetUrovenKarty(kartaNad) < 1)
+            if (CardHierarchy.GetCardLevel(karta) < 4 && CardHierarchy.GetCardLevel(karta) - CardHierarchy.GetCardLevel(kartaNad) < 1)
             {
-                MistoKartyVHierarchii.SetUrovenKarty(karta, MistoKartyVHierarchii.GetUrovenKarty(karta) + 1);
-                staryMargin.Left = (MistoKartyVHierarchii.GetUrovenKarty(karta)-1) * 20;
+                CardHierarchy.SetCardLevel(karta, CardHierarchy.GetCardLevel(karta) + 1);
+                staryMargin.Left = (CardHierarchy.GetCardLevel(karta)-1) * 20 + 5;
             }
             karta.Margin = staryMargin;
         }

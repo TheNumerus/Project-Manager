@@ -21,7 +21,7 @@
         </StackPanel>
         <ScrollViewer Margin="10,115,10,35" Focusable="False">
             <StackPanel x:Name="Seznam" Margin="0">
-                <Grid Height="40" x:Name="ZakladniKarta" Margin="5" helper:MistoKartyVHierarchii.UrovenKarty="1" Background="White" MouseLeftButtonDown="OpenDetailsWindow_Event" IsHitTestVisible="True">
+                <Grid Height="40" x:Name="ZakladniKarta" Margin="5" helper:CardHierarchy.CardLevel="1" Background="White" MouseLeftButtonDown="OpenDetailsWindow_Event" IsHitTestVisible="True">
                     <Grid.Effect>
                         <DropShadowEffect BlurRadius="10" Direction="270" Opacity="0.3"/>
                     </Grid.Effect>

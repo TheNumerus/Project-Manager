@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using System.Windows.Shapes;
+using System.Windows.Controls;
+using System.Windows;
 
 namespace ProjectManager
 {
@@ -66,67 +69,71 @@ namespace ProjectManager
         /// Since I want to edit card description and other things in a seperate window, I must save that data somewhere else than in "MainWindow" code file.
         /// Although so far all info was stored directly in the cards themselves, description and other info cannot be stored there.
         /// Ideal candidate is the "Data" structure used already for load and save operations. But this has one major flaw. I must edit that structure at runtime.
-        /// This means more events beeing added and expanded and also regenerating data structure after each hierarchical edit.
+        /// This means more events beeing added and expanded and also regenerating data structure after each hierarchical edit. <para />
+        /// Update 1 (20.09.2016)
+        /// So I decided to make this the hard way because it seems future-proof. Editing at runtime should be easy once I find a way to bind data object to card.
+        /// No new functions yet, but now it works almost the same way.
         /// </summary>
-        /*
+
+        public static void Generate(StackPanel List, TextBox ProjectName) {
+            runtimeData = new Data(ProjectName.Text, LabelColors.None, 0);
+            //this variable is basicly a path reference
+            Data PlaceToSave = runtimeData;
+            for (int i = 0; i < List.Children.Count; i++)
+            {
+                //this code doesn't work with only one card, so we handle it there
+                Grid cardAbove = new Grid();
+                if (i != 0)
+                {
+                    cardAbove = (Grid)List.Children[i - 1];
+                }
+                //there start code for generating data structure
+                else
+                {
+                    CardHierarchy.SetCardLevel(cardAbove, 1);
+                }
+                Grid card = (Grid)List.Children[i];
+                TextBox cardName = (TextBox)card.Children[0];
+                if (card.Visibility != Visibility.Collapsed)
+                {
+                    //if card above has bigger hierarchy level, we save that data there
+                    if (CardHierarchy.GetCardLevel((Grid)List.Children[i - 1]) < CardHierarchy.GetCardLevel((Grid)List.Children[i]))
+                    {
+                        PlaceToSave = PlaceToSave.Karty[PlaceToSave.Karty.Count - 1];
+                    }
+                    //if card above has lower hierarchy level, we save that data into parent of this card
+                    else if (CardHierarchy.GetCardLevel((Grid)List.Children[i - 1]) > CardHierarchy.GetCardLevel((Grid)List.Children[i]))
+                    {
+                        //but for that, we need to search all lists to find a parent
+                        PlaceToSave = FindPlaceToSave(runtimeData, PlaceToSave);
+                    }
+                    //if card above has same hierarchy level, we save it in same location
+                    PlaceToSave.Karty.Add(new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)card.Children[3]), CardHierarchy.GetCardLevel(card)));
+                }
+            }     
+        }
         public static void Save() {
-            String cesta = Application.Current.FindResource("PathToFile").ToString();
-            FileStream databaze;
-            //osetreni chybejicim pravum k zapisu souboru
+            String path = Application.Current.FindResource("PathToFile").ToString();
+            FileStream database;
+            //handle missing rigths to save file
             try
             {
-                databaze = File.Open(cesta, FileMode.Create);
+                database = File.Open(path, FileMode.Create);
             }
             catch (System.UnauthorizedAccessException)
             {
                 ErrorWindow errorwindow = new ErrorWindow();
-                errorwindow.Title = "Nedostatečná práva";
-                errorwindow.ErrorMessage.Text = "Chyba! Program nemá potřebná práva pro uložení souboru.";
+                errorwindow.Title = "Unsufficent rights";
+                errorwindow.ErrorMessage.Text = "Error! Program has unsufficent rights to save database.";
                 errorwindow.Show();
                 return;
             }
-            StreamWriter sw = new StreamWriter(databaze);
+            StreamWriter sw = new StreamWriter(database);
             XmlSerializer xs = new XmlSerializer(typeof(Data));
-            Data data = new Data(ProjectName.Text, LabelColors.None, 0);
-            //tahle promenna je kvuli tomu, aby se bylo mozno odkazat na predchozi misto ulozeni do datove struktury
-            Data mistoNaUlozeni = data;
-            for (int i = 0; i < Seznam.Children.Count; i++)
-            {
-                //zajisteni,ze karta nad existuje
-                Grid kartaNad = new Grid();
-                if (i != 0)
-                {
-                    kartaNad = (Grid)Seznam.Children[i - 1];
-                }
-                //pokud ne, tak se nastavi standartni misto v hierarchii
-                else
-                {
-                    MistoKartyVHierarchii.SetUrovenKarty(kartaNad, 1);
-                }
-                Grid karta = (Grid)Seznam.Children[i];
-                TextBox nazevKarty = (TextBox)karta.Children[0];
-                if (karta.Visibility != Visibility.Collapsed)
-                {
-                    //pokud je misto karty v hierarchii mensi nez karty nad ni, ulozi se karta do "deti" predchozi karty
-                    if (MistoKartyVHierarchii.GetUrovenKarty((Grid)Seznam.Children[i - 1]) < MistoKartyVHierarchii.GetUrovenKarty((Grid)Seznam.Children[i]))
-                    {
-                        mistoNaUlozeni = mistoNaUlozeni.Karty[mistoNaUlozeni.Karty.Count - 1];
-                    }
-                    //pokud je misto karty v hierarchii vetsi nez karty nad ni, ulozi se karta o uroven vys
-                    else if (MistoKartyVHierarchii.GetUrovenKarty((Grid)Seznam.Children[i - 1]) > MistoKartyVHierarchii.GetUrovenKarty((Grid)Seznam.Children[i]))
-                    {
-                        //vyhledani mista pro ulozeni
-                        mistoNaUlozeni = nalezeniMistaProUlozeni(data, mistoNaUlozeni);
-                    }
-                    //pokud je misto karty v hierarchii stejne jako v karte nad ni, ulozi se karta na stejne misto
-                    mistoNaUlozeni.Karty.Add(new Data(nazevKarty.Text, LabelColorNumbers.GetColorNumber((Rectangle)karta.Children[3]), MistoKartyVHierarchii.GetUrovenKarty(karta)));
-                }
-            }
-            xs.Serialize(sw, data);
+            xs.Serialize(sw, runtimeData);
             sw.Close();
-            databaze.Close();         
+            database.Close();
         }
-        */
         //recursive searching in data structure by element in list
         private static Data FindPlaceToSave(Data root, Data ChildOfElement)
         {
