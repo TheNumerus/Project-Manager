@@ -22,6 +22,7 @@ namespace ProjectManager
     {
         //reference to card
         public Grid Card;
+        public Data attachedData;
         public DetailsWindow()
         {
             InitializeComponent();
@@ -29,15 +30,17 @@ namespace ProjectManager
         //Here we add content info from card
         public void AddCardInfo(Grid SourceCard) {
             Card = SourceCard;
+            attachedData = RuntimeData.FindByID(Card.GetHashCode(), RuntimeData.runtimeData);
             nameBox.Text = ((TextBox)(Card.Children[0])).Text;
             //descBox.Text = ((TextBox)(Card.Children[0])).Text;
             LabelRect.Fill = new SolidColorBrush(LabelColorValues.barva[(int)LabelColorNumbers.GetColorNumber(Card.Children[3])]);
             LabelColorNumbers.SetColorNumber(LabelRect,LabelColorNumbers.GetColorNumber(Card.Children[3]));
+            descBox.Text = attachedData.description;
         }
 
         private void NameChanged_Event(object sender, TextChangedEventArgs e)
         {
-            //ensure the text is set
+            //ensure the card is set
             if (Card != null)
             {
                 ((TextBox)(Card.Children[0])).Text = nameBox.Text;
@@ -48,6 +51,15 @@ namespace ProjectManager
         {
             LabelColorNumbers.LabelColorChange(LabelRect,1);
             LabelColorNumbers.LabelColorChange((Rectangle)(Card.Children[3]),1);
+        }
+
+        private void DescChanged_Event(object sender, TextChangedEventArgs e)
+        {
+            //ensure the card is set
+            if (Card != null && descBox.Text != null)
+            {
+                attachedData.description = descBox.Text;
+            }
         }
     }
 }

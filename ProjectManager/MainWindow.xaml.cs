@@ -42,8 +42,11 @@ namespace ProjectManager
                     PridaniKarty(out novaKarta);
                     Seznam.Children.Add(novaKarta);
                 }
-                NahraniDoSeznamu(RuntimeData.runtimeData);
-                ProjectName.Text = RuntimeData.runtimeData.nazev;
+                else
+                {
+                    NahraniDoSeznamu(RuntimeData.runtimeData);
+                    ProjectName.Text = RuntimeData.runtimeData.nazev;
+                }
             }
         }
         //Metody pro zjednoduseni event handleru a pro mozne pouziti ve vice eventech
@@ -106,25 +109,30 @@ namespace ProjectManager
             novaKarta.Margin = marginNew;
             //pridani karty do seznamu
             Seznam.Children.Add(novaKarta);
+            //add hash of the created grid to data, so they bind together
+            data.GridID = novaKarta.GetHashCode();
+
         }
         //eventy pro tlacitka
         private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
             Promazani();
-            //Nacteni();
             if (!RuntimeData.Load())
             {
                 Grid novaKarta = new Grid();
                 PridaniKarty(out novaKarta);
                 Seznam.Children.Add(novaKarta);
             }
-            NahraniDoSeznamu(RuntimeData.runtimeData);
-            ProjectName.Text = RuntimeData.runtimeData.nazev;
+            else
+            {
+                NahraniDoSeznamu(RuntimeData.runtimeData);
+                ProjectName.Text = RuntimeData.runtimeData.nazev;
+            }
         }
 
         private void WriteButton_Click(object sender, RoutedEventArgs e)
         {
-            RuntimeData.Generate(Seznam,ProjectName);
+            //RuntimeData.Generate(Seznam,ProjectName);
             RuntimeData.Save();
         }
 
@@ -132,20 +140,22 @@ namespace ProjectManager
         {
             Grid Karta = new Grid();
             PridaniKarty(out Karta);
-            //zjisti poradove cislo tlacitka ktere vyslalo event
+            //get card number which sent the event, so we can add new card just under it
             int cisloKarty = Seznam.Children.IndexOf((Grid)((Button)sender).Parent);
             Seznam.Children.Insert(cisloKarty + 1, Karta);
+            RuntimeData.Generate(Seznam, ProjectName);
         }
 
         private void Smazat_polozku(object sender, RoutedEventArgs e)
         {
             Seznam.Children.Remove((Grid)((Button)sender).Parent);
-            //zabraneni prazdnemu listu
+            //avoid empty list
             if (Seznam.Children.Count == 1)
             {
                 Grid Karta = new Grid();
                 PridaniKarty(out Karta);
                 Seznam.Children.Add(Karta);
+                RuntimeData.Generate(Seznam, ProjectName);
             }
         }
 
@@ -163,6 +173,7 @@ namespace ProjectManager
         private void ZmenaBarvyLabelu(object sender, MouseButtonEventArgs e)
         {
             LabelColorNumbers.LabelColorChange((Rectangle)sender,1);
+            RuntimeData.Generate(Seznam, ProjectName);
         }
         //zajisteni presunu nahoru a dolu
         private void PresunNahoru(object sender, RoutedEventArgs e)
@@ -177,6 +188,7 @@ namespace ProjectManager
                 staryMargin.Left = (CardHierarchy.GetCardLevel(karta)-1) * 20 + 5;
             }
             karta.Margin = staryMargin;
+            RuntimeData.Generate(Seznam, ProjectName);
         }
         private void PresunDolu(object sender, RoutedEventArgs e)
         {
@@ -191,8 +203,9 @@ namespace ProjectManager
                 staryMargin.Left = (CardHierarchy.GetCardLevel(karta)-1) * 20 + 5;
             }
             karta.Margin = staryMargin;
+            RuntimeData.Generate(Seznam, ProjectName);
         }
-        //event pro otevreni about okna
+        //open about window
         private void OpenAboutWindow(object sender, RoutedEventArgs e) {
             AboutWindow aw = new AboutWindow();
             aw.Show();

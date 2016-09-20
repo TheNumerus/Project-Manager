@@ -9,7 +9,7 @@
         Title="DetailsWindow" Height="163.866" Width="360" ResizeMode="NoResize" Topmost="True" WindowStartupLocation="CenterScreen">
     <Grid>
         <TextBox x:Name="nameBox" Text="CardName" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" TextChanged="NameChanged_Event"/>
-        <TextBox x:Name="descBox" Height="69" Margin="10,38,10,0" TextWrapping="Wrap" Text="Description" VerticalAlignment="Top" BorderBrush="{x:Null}"/>
+        <TextBox x:Name="descBox" Height="69" Margin="10,38,10,0" TextWrapping="Wrap" Text="Description" VerticalAlignment="Top" BorderBrush="{x:Null}" TextChanged="DescChanged_Event"/>
         <Rectangle x:Name="LabelRect" Fill="#00000000" Margin="10,0,10,10" Stroke="#33000000" Height="12" VerticalAlignment="Bottom" helper:LabelColorNumbers.ColorNumber="None" MouseDown="LabelChange_Event"/>
 
     </Grid>

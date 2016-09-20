@@ -33,6 +33,7 @@ namespace ProjectManager
                 errorwindow.Title = "Soubor neexistuje";
                 errorwindow.ErrorMessage.Text = "Chyba! Soubor neexistuje.";
                 errorwindow.Show();
+                runtimeData = new Data();
                 return false;
             }
             catch (System.UnauthorizedAccessException)
@@ -41,6 +42,7 @@ namespace ProjectManager
                 errorwindow.Title = "Nedostatečná práva";
                 errorwindow.ErrorMessage.Text = "Chyba! Program nemá potřebná práva pro načtení souboru.";
                 errorwindow.Show();
+                runtimeData = new Data();
                 return false;
             }
             StreamReader sr = new StreamReader(databaze);
@@ -58,23 +60,14 @@ namespace ProjectManager
                 errorwindow.Show();
                 sr.Close();
                 databaze.Close();
+                runtimeData = new Data();
                 return false;
             }
             sr.Close();
             databaze.Close();
             return true;
         }
-        /// <summary>
-        /// Right now (19.09.2016), following method is severely broken, because its copied from "MainWindow" code file.
-        /// Since I want to edit card description and other things in a seperate window, I must save that data somewhere else than in "MainWindow" code file.
-        /// Although so far all info was stored directly in the cards themselves, description and other info cannot be stored there.
-        /// Ideal candidate is the "Data" structure used already for load and save operations. But this has one major flaw. I must edit that structure at runtime.
-        /// This means more events beeing added and expanded and also regenerating data structure after each hierarchical edit. <para />
-        /// Update 1 (20.09.2016)
-        /// So I decided to make this the hard way because it seems future-proof. Editing at runtime should be easy once I find a way to bind data object to card.
-        /// No new functions yet, but now it works almost the same way.
-        /// </summary>
-
+        //method that generates data structure
         public static void Generate(StackPanel List, TextBox ProjectName) {
             runtimeData = new Data(ProjectName.Text, LabelColors.None, 0);
             //this variable is basicly a path reference
@@ -108,9 +101,9 @@ namespace ProjectManager
                         PlaceToSave = FindPlaceToSave(runtimeData, PlaceToSave);
                     }
                     //if card above has same hierarchy level, we save it in same location
-                    PlaceToSave.Karty.Add(new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)card.Children[3]), CardHierarchy.GetCardLevel(card)));
+                    PlaceToSave.Karty.Add(new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)card.Children[3]), CardHierarchy.GetCardLevel(card),card.GetHashCode()));
                 }
-            }     
+            }
         }
         public static void Save() {
             String path = Application.Current.FindResource("PathToFile").ToString();
@@ -148,6 +141,25 @@ namespace ProjectManager
                 else
                 {
                     foundElement = FindPlaceToSave(d, ChildOfElement);
+                }
+            }
+            return foundElement;
+        }
+        //find data by id
+        public static Data FindByID(int ID,Data root) {
+            Data foundElement = null;
+            if (ID == root.GridID)
+            {
+                foundElement = root;
+            }
+            else
+            {
+                foreach (Data d in root.Karty)
+                {
+                    foundElement = FindByID(ID, d);
+                    if (foundElement != null) {
+                        break;
+                    }
                 }
             }
             return foundElement;
