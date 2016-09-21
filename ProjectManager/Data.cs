@@ -10,6 +10,7 @@ namespace ProjectManager
 {
     public class Data
     {
+        private static ID;
         public string nazev;
         public List<Data> Karty;
         public LabelColors labelColor;
@@ -19,75 +20,25 @@ namespace ProjectManager
         //not save following variable
         [XmlIgnore]
         public int GridID;
-        public Data(string newNazev,LabelColors newLabelColor, int newPozice, string desc,DateTime date)
+        public Data(string novyNazev = "", LabelColors novyLabelColor = LabelColors.None, int novaPozice = 0, string desc = "", DateTime date = DateTime.Now, int newID = Data.ID)
         {
-            nazev = newNazev;
+            nazev = novyNazev;
             Karty = new List<Data>();
-            labelColor = newLabelColor;
-            pozice = newPozice;
+            labelColor = novyLabelColor;
+            pozice = novaPozice;
             description = desc;
             changeDate = date;
-        }
-        public Data(string newNazev, LabelColors newLabelColor, int newPozice, string desc)
-        {
-            nazev = newNazev;
-            Karty = new List<Data>();
-            labelColor = newLabelColor;
-            pozice = newPozice;
-        }
-        public Data(string newNazev, LabelColors newLabelColor, int newPozice, DateTime date)
-        {
-            nazev = newNazev;
-            Karty = new List<Data>();
-            labelColor = newLabelColor;
-            pozice = newPozice;
-            changeDate = date;
-        }
-        public Data(string newNazev, LabelColors newLabelColor, int newPozice)
-        {
-            nazev = newNazev;
-            Karty = new List<Data>();
-            labelColor = newLabelColor;
-            pozice = newPozice;
-        }
-        public Data(string newNazev, LabelColors newLabelColor, int newPozice, string desc, DateTime date, int newID)
-        {
-            nazev = newNazev;
-            Karty = new List<Data>();
-            labelColor = newLabelColor;
-            pozice = newPozice;
-            description = desc;
-            changeDate = date;
+            
+            /* Každý nový objekt dostane nové ID. Nevím, jestli to je potřeba, radši to zkontroluj a přepiš. */
+            
             GridID = newID;
+            ++(Data.ID);
         }
-        public Data(string newNazev, LabelColors newLabelColor, int newPozice, string desc, int newID)
-        {
-            nazev = newNazev;
-            Karty = new List<Data>();
-            labelColor = newLabelColor;
-            pozice = newPozice;
-            GridID = newID;
-        }
-        public Data(string newNazev, LabelColors newLabelColor, int newPozice, DateTime date, int newID)
-        {
-            nazev = newNazev;
-            Karty = new List<Data>();
-            labelColor = newLabelColor;
-            pozice = newPozice;
-            changeDate = date;
-            GridID = newID;
-        }
-        public Data(string newNazev, LabelColors newLabelColor, int newPozice, int newID)
-        {
-            nazev = newNazev;
-            Karty = new List<Data>();
-            labelColor = newLabelColor;
-            pozice = newPozice;
-            GridID = newID;
-        }
+        /* Tohle už je nejspíš zbytečné, ale jestli to budeš potřebovat, odstraň tento comment.
         public Data()
         {
             Karty = new List<Data>();
         }
+        */
     }
 }
