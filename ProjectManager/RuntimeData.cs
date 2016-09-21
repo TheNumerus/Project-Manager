@@ -116,8 +116,8 @@ namespace ProjectManager
             catch (System.UnauthorizedAccessException)
             {
                 ErrorWindow errorwindow = new ErrorWindow();
-                errorwindow.Title = "Unsufficent rights";
-                errorwindow.ErrorMessage.Text = "Error! Program has unsufficent rights to save database.";
+                errorwindow.Title = "Insufficent rights";
+                errorwindow.ErrorMessage.Text = "Error! Program has insufficent rights to save database.";
                 errorwindow.Show();
                 return;
             }
