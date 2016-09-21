@@ -101,7 +101,7 @@ namespace ProjectManager
                         PlaceToSave = FindPlaceToSave(runtimeData, PlaceToSave);
                     }
                     //if card above has same hierarchy level, we save it in same location
-                    PlaceToSave.Karty.Add(new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)card.Children[3]), CardHierarchy.GetCardLevel(card),card.GetHashCode()));
+                    PlaceToSave.Karty.Add(new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)card.Children[3]), CardHierarchy.GetCardLevel(card),newID: card.GetHashCode()));
                 }
             }
         }
