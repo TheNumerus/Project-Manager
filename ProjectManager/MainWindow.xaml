@@ -35,9 +35,10 @@
                     <Button x:Name="StandartPridat" Content="+" HorizontalAlignment="Right" Margin="0,0,10,0" Grid.Row="1" Padding="1" Width="20" Click="Pridat_polozku"/>
                     <Rectangle x:Name="StandartLabel" Fill="White" Height="4" VerticalAlignment="Top" Width="80" HorizontalAlignment="Left" Margin="10,0,0,0" MouseEnter="PrejetiLabeluOn" 
                            MouseLeave="PrejetiLabeluOff" MouseLeftButtonDown="ZmenaBarvyLabelu" helper:LabelColorNumbers.ColorNumber="None" Stroke="#33000000"/>
-                    <Button x:Name="StandartDoleva" Content="&lt;" Margin="0,0,100,0" Grid.Row="1" HorizontalAlignment="Right" Padding="1" Width="20" Click="PresunNahoru"/>
+                    <Button x:Name="StandartDoleva" Content="&lt;" Margin="0,0,90,0" Grid.Row="1" HorizontalAlignment="Right" Padding="1" Width="20" Click="PresunNahoru"/>
                     <Button x:Name="StandartDoprava" Content="&gt;" HorizontalAlignment="Right" Margin="0,0,70,0" Grid.Row="1" Padding="1" Width="20" Click="PresunDolu"/>
-
+                    <Button x:Name="StandartUp" Content="˄" Margin="0,0,120,0" Grid.Row="1" HorizontalAlignment="Right" Padding="1" Width="20" Click="MoveCardUp"/>
+                    <Button x:Name="StandartDown" Content="˅" HorizontalAlignment="Right" Margin="0,0,140,0" Grid.Row="1" Padding="1" Width="20" Click="MoveCardDown"/>
                 </Grid>
             </StackPanel>
         </ScrollViewer>

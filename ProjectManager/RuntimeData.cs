@@ -69,9 +69,9 @@ namespace ProjectManager
         }
         //method that generates data structure
         public static void Generate(StackPanel List, TextBox ProjectName) {
-            runtimeData = new Data(ProjectName.Text, LabelColors.None, 0);
+            Data runtimeDataNew = new Data(ProjectName.Text, LabelColors.None, 0);
             //this variable is basicly a path reference
-            Data PlaceToSave = runtimeData;
+            Data PlaceToSave = runtimeDataNew;
             for (int i = 0; i < List.Children.Count; i++)
             {
                 //this code doesn't work with only one card, so we handle it there
@@ -98,12 +98,19 @@ namespace ProjectManager
                     else if (CardHierarchy.GetCardLevel((Grid)List.Children[i - 1]) > CardHierarchy.GetCardLevel((Grid)List.Children[i]))
                     {
                         //but for that, we need to search all lists to find a parent
-                        PlaceToSave = FindPlaceToSave(runtimeData, PlaceToSave);
+                        PlaceToSave = FindDataParent(runtimeDataNew, PlaceToSave);
                     }
                     //if card above has same hierarchy level, we save it in same location
-                    PlaceToSave.Karty.Add(new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)card.Children[3]), CardHierarchy.GetCardLevel(card),newID: card.GetHashCode()));
+                    Data DataToAdd = new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)card.Children[3]), CardHierarchy.GetCardLevel(card), newID: card.GetHashCode());
+                    PlaceToSave.Karty.Add(DataToAdd);
+                    //if there was a data object with description, we add that description back
+                    if (FindByID(card.GetHashCode(), runtimeData) != null) {
+                        DataToAdd.description = FindByID(card.GetHashCode(), runtimeData).description;
+                    }
                 }
             }
+            //here we replace old data with new data
+            runtimeData = runtimeDataNew;
         }
         public static void Save() {
             String path = Application.Current.FindResource("PathToFile").ToString();
@@ -128,7 +135,7 @@ namespace ProjectManager
             database.Close();
         }
         //recursive searching in data structure by element in list
-        private static Data FindPlaceToSave(Data root, Data ChildOfElement)
+        public static Data FindDataParent(Data root, Data ChildOfElement)
         {
             Data foundElement = null;
             foreach (Data d in root.Karty)
@@ -140,7 +147,11 @@ namespace ProjectManager
                 }
                 else
                 {
-                    foundElement = FindPlaceToSave(d, ChildOfElement);
+                    foundElement = FindDataParent(d, ChildOfElement);
+                    if (foundElement != null)
+                    {
+                        break;
+                    }
                 }
             }
             return foundElement;

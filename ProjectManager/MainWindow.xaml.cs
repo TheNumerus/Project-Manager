@@ -66,6 +66,8 @@ namespace ProjectManager
             ((Rectangle)novaKarta.Children[3]).MouseDown += ZmenaBarvyLabelu;
             ((Button)novaKarta.Children[4]).Click += PresunNahoru;
             ((Button)novaKarta.Children[5]).Click += PresunDolu;
+            ((Button)novaKarta.Children[6]).Click += MoveCardUp;
+            ((Button)novaKarta.Children[7]).Click += MoveCardDown;
             //add event to open detail window
             novaKarta.MouseDown += OpenDetailsWindow_Event;
             //zakladni karta je neviditelna, takze jeji kopie se musi zviditelnit
@@ -112,6 +114,54 @@ namespace ProjectManager
             //add hash of the created grid to data, so they bind together
             data.GridID = novaKarta.GetHashCode();
 
+        }
+        //methods for moving cards in hierarchy
+        public void MoveCardLeft(Grid card,int steps = 1) {
+            for (int i = 0; i < steps; i++)
+            {
+                Thickness staryMargin = card.Margin;
+                if (CardHierarchy.GetCardLevel(card) > 1)
+                {
+                    CardHierarchy.SetCardLevel(card, CardHierarchy.GetCardLevel(card) - 1);
+                    staryMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20 + 5;
+                }
+                card.Margin = staryMargin;
+            }
+            RuntimeData.Generate(Seznam, ProjectName);
+        }
+        public void MoveCardRight(Grid card,Grid cardAbove, int steps = 1)
+        {
+            for (int i = 0; i < steps; i++)
+            {
+                Thickness staryMargin = card.Margin;
+                Data data = RuntimeData.FindByID(card.GetHashCode(), RuntimeData.runtimeData);
+                Data parent = RuntimeData.FindDataParent(RuntimeData.runtimeData, data);
+                //if parent has a child above moved card, move can happen
+                if (CardHierarchy.GetCardLevel(card) < 4 &&  parent.Karty.IndexOf(data) >= 1)
+                {
+                    CardHierarchy.SetCardLevel(card, CardHierarchy.GetCardLevel(card) + 1);
+                    staryMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20 + 5;
+                }
+                card.Margin = staryMargin;
+            }
+            RuntimeData.Generate(Seznam, ProjectName);
+        }
+        //method for moving all cards in hierarchy
+        public void SortAllCards(StackPanel sp) {
+            for(int i = 1;i<sp.Children.Count;i++) {
+                Grid card = (Grid)sp.Children[i];
+                Grid cardAbove = (Grid)sp.Children[i-1];
+
+                //set first card allways to first place
+                if (i == 1)
+                {
+                    MoveCardLeft(card, 4);
+                    //move all cards with invalid hierarchy to level above
+                } else if(CardHierarchy.GetCardLevel(card) - CardHierarchy.GetCardLevel(cardAbove) > 1)
+                {
+                    MoveCardLeft(card);
+                }
+            }
         }
         //eventy pro tlacitka
         private void LoadButton_Click(object sender, RoutedEventArgs e)
@@ -178,32 +228,20 @@ namespace ProjectManager
         //zajisteni presunu nahoru a dolu
         private void PresunNahoru(object sender, RoutedEventArgs e)
         {
-            Button tlacitko = (Button)sender;
-            int pozice = Seznam.Children.IndexOf((UIElement)tlacitko.Parent);
-            Grid karta = (Grid)Seznam.Children[pozice];
-            Thickness staryMargin = (karta).Margin;
-            if (CardHierarchy.GetCardLevel(karta) > 1)
-            {
-                CardHierarchy.SetCardLevel(karta, CardHierarchy.GetCardLevel(karta) - 1);
-                staryMargin.Left = (CardHierarchy.GetCardLevel(karta)-1) * 20 + 5;
-            }
-            karta.Margin = staryMargin;
-            RuntimeData.Generate(Seznam, ProjectName);
+            Button btn = (Button)sender;
+            int index = Seznam.Children.IndexOf((UIElement)btn.Parent);
+            Grid card = (Grid)Seznam.Children[index];
+            MoveCardLeft(card);
+            SortAllCards(Seznam);
         }
         private void PresunDolu(object sender, RoutedEventArgs e)
         {
-            Button tlacitko = (Button)sender;
-            int pozice = Seznam.Children.IndexOf((UIElement)tlacitko.Parent);
-            Grid karta = (Grid)Seznam.Children[pozice];
-            Grid kartaNad = (Grid)Seznam.Children[pozice-1];
-            Thickness staryMargin = (karta).Margin;
-            if (CardHierarchy.GetCardLevel(karta) < 4 && CardHierarchy.GetCardLevel(karta) - CardHierarchy.GetCardLevel(kartaNad) < 1)
-            {
-                CardHierarchy.SetCardLevel(karta, CardHierarchy.GetCardLevel(karta) + 1);
-                staryMargin.Left = (CardHierarchy.GetCardLevel(karta)-1) * 20 + 5;
-            }
-            karta.Margin = staryMargin;
-            RuntimeData.Generate(Seznam, ProjectName);
+            Button btn = (Button)sender;
+            int index = Seznam.Children.IndexOf((UIElement)btn.Parent);
+            Grid card = (Grid)Seznam.Children[index];
+            Grid cardAbove = (Grid)Seznam.Children[index-1];
+            MoveCardRight(card, cardAbove);
+            SortAllCards(Seznam);
         }
         //open about window
         private void OpenAboutWindow(object sender, RoutedEventArgs e) {
@@ -229,6 +267,39 @@ namespace ProjectManager
                 //set focus to newly opened window
                 detWin.Focus();
             }
+        }
+        //move card up and down
+        private void MoveCardDown(object sender, RoutedEventArgs e)
+        {
+            Button btn = (Button)sender;
+            int index = Seznam.Children.IndexOf((UIElement)btn.Parent);
+            Grid card = (Grid)Seznam.Children[index];
+            Seznam.Children.RemoveAt(index);
+            //handle last card
+            if (index != Seznam.Children.Count)
+            {
+                Seznam.Children.Insert(index + 1, card);
+            }
+            else {
+                Seznam.Children.Insert(index, card);
+            }
+            SortAllCards(Seznam);
+            RuntimeData.Generate(Seznam, ProjectName);
+        }
+
+        private void MoveCardUp(object sender, RoutedEventArgs e)
+        {
+            Button btn = (Button)sender;
+            int index = Seznam.Children.IndexOf((UIElement)btn.Parent);
+            Grid card = (Grid)Seznam.Children[index];
+            //handle first card
+            if (index != 1)
+            {
+                Seznam.Children.RemoveAt(index);
+                Seznam.Children.Insert(index - 1, card);
+            }
+            SortAllCards(Seznam);
+            RuntimeData.Generate(Seznam, ProjectName);
         }
     }
 }
