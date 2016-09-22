@@ -11,6 +11,6 @@
         <TextBox x:Name="nameBox" Text="CardName" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" TextChanged="NameChanged_Event"/>
         <TextBox x:Name="descBox" Height="69" Margin="10,38,10,0" TextWrapping="Wrap" Text="Description" VerticalAlignment="Top" BorderBrush="{x:Null}" TextChanged="DescChanged_Event"/>
         <Rectangle x:Name="LabelRect" Fill="#00000000" Margin="10,0,10,10" Stroke="#33000000" Height="12" VerticalAlignment="Bottom" helper:LabelColorNumbers.ColorNumber="None" MouseDown="LabelChange_Event"/>
-
+        <TextBlock x:Name="dateBlock" Text="Date" Margin="0,10,10,0" VerticalAlignment="Top" FontSize="16" HorizontalAlignment="Right"/>
     </Grid>
 </Window>

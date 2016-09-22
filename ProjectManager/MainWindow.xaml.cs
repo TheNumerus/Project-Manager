@@ -195,12 +195,15 @@ namespace ProjectManager
 
         private void Pridat_polozku(object sender, RoutedEventArgs e)
         {
-            Grid Karta = new Grid();
-            PridaniKarty(out Karta);
+            Grid card = new Grid();
+            PridaniKarty(out card);
             //get card number which sent the event, so we can add new card just under it
             int cisloKarty = Seznam.Children.IndexOf((Grid)((Button)sender).Parent);
-            Seznam.Children.Insert(cisloKarty + 1, Karta);
+            Seznam.Children.Insert(cisloKarty + 1, card);
             RuntimeData.Generate(Seznam, ProjectName);
+            //here we assign new date to card data
+            Data data = RuntimeData.FindByID(card.GetHashCode(), RuntimeData.runtimeData);
+            data.changeDate = DateTime.Now;
         }
 
         private void Smazat_polozku(object sender, RoutedEventArgs e)

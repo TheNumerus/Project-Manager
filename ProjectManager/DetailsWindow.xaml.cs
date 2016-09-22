@@ -36,6 +36,12 @@ namespace ProjectManager
             LabelRect.Fill = new SolidColorBrush(LabelColorValues.barva[(int)LabelColorNumbers.GetColorNumber(Card.Children[3])]);
             LabelColorNumbers.SetColorNumber(LabelRect,LabelColorNumbers.GetColorNumber(Card.Children[3]));
             descBox.Text = attachedData.description;
+            //handle empty date
+            if(attachedData.changeDate.Year != 1){
+                dateBlock.Text = attachedData.changeDate.Date.ToLongDateString();
+            }else{
+                dateBlock.Visibility = Visibility.Hidden;
+            }
         }
 
         private void NameChanged_Event(object sender, TextChangedEventArgs e)
