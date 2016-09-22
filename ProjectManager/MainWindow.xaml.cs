@@ -17,6 +17,7 @@ using System.Windows.Markup;
 using System.Xml.Serialization;
 using System.Xml;
 using ProjectManager.Helpers;
+using Microsoft.Win32;
 
 namespace ProjectManager
 {
@@ -48,9 +49,15 @@ namespace ProjectManager
                     ProjectName.Text = RuntimeData.runtimeData.nazev;
                 }
             }
+            SetWindowName();
+        }
+        //method for setting new window name
+        public void SetWindowName() {
+            string label = String.Empty;
+            label+="Project Manager - " + ProjectName.Text;
+            this.Title = label;
         }
         //Metody pro zjednoduseni event handleru a pro mozne pouziti ve vice eventech
-
         public void PridaniKarty(out Grid novaKarta)
         {
             //zparsovani do stringu a nasledne nakopirovani
@@ -300,6 +307,45 @@ namespace ProjectManager
             }
             SortAllCards(Seznam);
             RuntimeData.Generate(Seznam, ProjectName);
+        }
+        //event for opening new file
+        private void OpenButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Database files (*.xml)|*.xml|All files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                Properties.Settings.Default.PathToFile = openFileDialog.FileName;
+                Promazani();
+                if (!RuntimeData.Load())
+                {
+                    Grid novaKarta = new Grid();
+                    PridaniKarty(out novaKarta);
+                    Seznam.Children.Add(novaKarta);
+                }
+                else
+                {
+                    NahraniDoSeznamu(RuntimeData.runtimeData);
+                    ProjectName.Text = RuntimeData.runtimeData.nazev;
+                }
+            }
+            SetWindowName();
+        }
+        //event for saving new file
+        private void WriteAsButton_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog savedia = new SaveFileDialog();
+            savedia.Filter = "Database files (*.xml)|*.xml|All files (*.*)|*.*";
+            if (savedia.ShowDialog() == true) {
+                Properties.Settings.Default.PathToFile = savedia.FileName;
+                RuntimeData.Save();
+            }
+            SetWindowName();
+        }
+        //sets new window name after editing label
+        private void SetNewWindowName(object sender, TextChangedEventArgs e)
+        {
+            SetWindowName();
         }
     }
 }

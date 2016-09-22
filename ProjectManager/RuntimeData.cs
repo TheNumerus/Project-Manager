@@ -20,12 +20,12 @@ namespace ProjectManager
         //load data to variable
         public static bool Load()
         {
-            String cesta = Application.Current.FindResource("PathToFile").ToString();
+            String path = Properties.Settings.Default.PathToFile;
             //load file
             FileStream databaze;
             try
             {
-                databaze = File.Open(cesta, FileMode.Open);
+                databaze = File.Open(path, FileMode.Open);
             }
             catch (System.IO.FileNotFoundException)
             {
@@ -113,7 +113,7 @@ namespace ProjectManager
             runtimeData = runtimeDataNew;
         }
         public static void Save() {
-            String path = Application.Current.FindResource("PathToFile").ToString();
+            String path = Properties.Settings.Default.PathToFile;
             FileStream database;
             //handle missing rigths to save file
             try
