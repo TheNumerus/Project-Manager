@@ -20,6 +20,7 @@ namespace ProjectManager
         //load data to variable
         public static bool Load()
         {
+            runtimeData = new Data();
             String path = Properties.Settings.Default.PathToFile;
             //load file
             FileStream databaze;
@@ -63,12 +64,20 @@ namespace ProjectManager
                 runtimeData = new Data();
                 return false;
             }
+            //handle empty file
+            if (runtimeData == null) {
+                runtimeData = new Data();
+            }
             sr.Close();
             databaze.Close();
             return true;
         }
         //method that generates data structure
         public static void Generate(StackPanel List, TextBox ProjectName) {
+            //handle empty runtime data
+            if (runtimeData == null) {
+                runtimeData = new Data();
+            }
             Data runtimeDataNew = new Data(ProjectName.Text, LabelColors.None, 0);
             //this variable is basicly a path reference
             Data PlaceToSave = runtimeDataNew;
@@ -94,11 +103,11 @@ namespace ProjectManager
                     {
                         PlaceToSave = PlaceToSave.Karty[PlaceToSave.Karty.Count - 1];
                     }
-                    //if card above has lower hierarchy level, we save that data into parent of this card
+                    //if card above has lower hierarchy level, we save that card into parent of card, with the same hierarchy
                     else if (CardHierarchy.GetCardLevel((Grid)List.Children[i - 1]) > CardHierarchy.GetCardLevel((Grid)List.Children[i]))
                     {
                         //but for that, we need to search all lists to find a parent
-                        PlaceToSave = FindDataParent(runtimeDataNew, PlaceToSave);
+                        PlaceToSave = FindDataParent(runtimeDataNew, FindDataByHierarchy(runtimeDataNew, CardHierarchy.GetCardLevel((Grid)List.Children[i])));
                     }
                     //if card above has same hierarchy level, we save it in same location
                     Data DataToAdd = new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)card.Children[3]), CardHierarchy.GetCardLevel(card), newID: card.GetHashCode());
@@ -106,6 +115,7 @@ namespace ProjectManager
                     //if there was a data object with description, we add that description back
                     if (FindByID(card.GetHashCode(), runtimeData) != null) {
                         DataToAdd.description = FindByID(card.GetHashCode(), runtimeData).description;
+                        DataToAdd.changeDate = FindByID(card.GetHashCode(), runtimeData).changeDate;
                     }
                 }
             }
@@ -156,6 +166,23 @@ namespace ProjectManager
             }
             return foundElement;
         }
+        //recursive searching in data structure for last element with specific hierarchy number
+        public static Data FindDataByHierarchy(Data root,int hierarchyNumber)
+        {
+            Data foundElement = null;
+            foreach (Data d in root.Karty)
+            {
+                if (d.pozice == hierarchyNumber)
+                {
+                    foundElement = d;
+                }
+                else
+                {
+                    foundElement = FindDataByHierarchy(d,hierarchyNumber);
+                }
+            }
+            return foundElement;
+        }
         //find data by id
         public static Data FindByID(int ID,Data root) {
             Data foundElement = null;
@@ -165,11 +192,14 @@ namespace ProjectManager
             }
             else
             {
-                foreach (Data d in root.Karty)
-                {
-                    foundElement = FindByID(ID, d);
-                    if (foundElement != null) {
-                        break;
+                //handle no childs
+                if (root.Karty != null) {
+                    foreach (Data d in root.Karty)
+                    {
+                        foundElement = FindByID(ID, d);
+                        if (foundElement != null) {
+                            break;
+                        }
                     }
                 }
             }

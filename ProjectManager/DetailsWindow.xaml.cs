@@ -57,6 +57,7 @@ namespace ProjectManager
         {
             LabelColorNumbers.LabelColorChange(LabelRect,1);
             LabelColorNumbers.LabelColorChange((Rectangle)(Card.Children[3]),1);
+            attachedData.labelColor = LabelColorNumbers.GetColorNumber(LabelRect);
         }
 
         private void DescChanged_Event(object sender, TextChangedEventArgs e)

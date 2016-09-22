@@ -42,6 +42,7 @@ namespace ProjectManager
                     novaKarta = new Grid();
                     PridaniKarty(out novaKarta);
                     Seznam.Children.Add(novaKarta);
+                    RuntimeData.Generate(Seznam,ProjectName);
                 }
                 else
                 {
@@ -68,9 +69,6 @@ namespace ProjectManager
             //pridani eventu k tlacitkum a labelu
             ((Button)novaKarta.Children[1]).Click += Smazat_polozku;
             ((Button)novaKarta.Children[2]).Click += Pridat_polozku;
-            ((Rectangle)novaKarta.Children[3]).MouseEnter += PrejetiLabeluOn;
-            ((Rectangle)novaKarta.Children[3]).MouseLeave += PrejetiLabeluOff;
-            ((Rectangle)novaKarta.Children[3]).MouseDown += ZmenaBarvyLabelu;
             ((Button)novaKarta.Children[4]).Click += PresunNahoru;
             ((Button)novaKarta.Children[5]).Click += PresunDolu;
             ((Button)novaKarta.Children[6]).Click += MoveCardUp;
@@ -217,23 +215,6 @@ namespace ProjectManager
                 Seznam.Children.Add(Karta);
                 RuntimeData.Generate(Seznam, ProjectName);
             }
-        }
-
-        //zvetseni pri prejeti po labelu
-        private void PrejetiLabeluOn(object sender, MouseEventArgs e)
-        {
-            ((Rectangle)sender).Height = 10;
-        }
-        //zmenseni pri prejeti od labelu
-        private void PrejetiLabeluOff(object sender, MouseEventArgs e)
-        {
-            ((Rectangle)sender).Height = 4;
-        }
-        //cyklicka zmena barvy labelu
-        private void ZmenaBarvyLabelu(object sender, MouseButtonEventArgs e)
-        {
-            LabelColorNumbers.LabelColorChange((Rectangle)sender,1);
-            RuntimeData.Generate(Seznam, ProjectName);
         }
         //zajisteni presunu nahoru a dolu
         private void PresunNahoru(object sender, RoutedEventArgs e)

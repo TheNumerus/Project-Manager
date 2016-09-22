@@ -22,7 +22,7 @@ namespace ProjectManager.Helpers
         //this method is stored here, so it can be used in mutiple windows
         public static void LabelColorChange(Rectangle rect,int shift) {
             LabelColors currentCol = LabelColorNumbers.GetColorNumber(rect);
-            LabelColors newCol = (int)currentCol > 3 ? 0 : currentCol + shift;
+            LabelColors newCol = (int)currentCol > 5 ? 0 : currentCol + shift;
             LabelColorNumbers.SetColorNumber(rect, newCol);
             rect.Fill = new SolidColorBrush(LabelColorValues.barva[(int)newCol]);
         }
@@ -32,8 +32,11 @@ namespace ProjectManager.Helpers
         Red,
         Blue,
         Green,
-        Yellow };
+        Yellow,
+        Violet,
+        Grey
+    };
     public static class LabelColorValues {
-        public static Color[] barva = {Color.FromArgb(0,0,0,0),Colors.Firebrick,Colors.SteelBlue,Colors.YellowGreen,Colors.Gold};
+        public static Color[] barva = {Color.FromArgb(0,0,0,0),Colors.Firebrick,Colors.SteelBlue,Colors.YellowGreen,Colors.Gold,Colors.Indigo,Colors.Gray};
     }
 }
