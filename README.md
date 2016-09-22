@@ -5,6 +5,7 @@ A simple project manager.
 
 ##Current version is 0.3.0
 
+## [Download](https://github.com/TheNumerus/Project-Manager/releases/tag/0.3)
 
 ##0.3 Release
 
