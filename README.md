@@ -11,9 +11,9 @@ A simple project manager.
 ###Changelog
 
 ####New functions
-- Added move cards up and down
+- Added ability to move cards up and down
 - Added detail window to add description to card
-- Cards now save date of creation
+- Cards now save date of their creation
 - Opening more projects is now possible
 - Added 2 more label colors
 
