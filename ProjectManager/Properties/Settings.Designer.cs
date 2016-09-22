@@ -34,5 +34,17 @@ namespace ProjectManager.Properties {
                 this["LoadOnStart"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("database.xml")]
+        public string PathToFile {
+            get {
+                return ((string)(this["PathToFile"]));
+            }
+            set {
+                this["PathToFile"] = value;
+            }
+        }
     }
 }

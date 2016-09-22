@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using System.Xml.Serialization;
+using System.Windows.Shapes;
 
 namespace ProjectManager.Helpers
 {
@@ -18,14 +19,24 @@ namespace ProjectManager.Helpers
         {
             return (LabelColors)element.GetValue(ColorNumberProperty);
         }
+        //this method is stored here, so it can be used in mutiple windows
+        public static void LabelColorChange(Rectangle rect,int shift) {
+            LabelColors currentCol = LabelColorNumbers.GetColorNumber(rect);
+            LabelColors newCol = (int)currentCol > 5 ? 0 : currentCol + shift;
+            LabelColorNumbers.SetColorNumber(rect, newCol);
+            rect.Fill = new SolidColorBrush(LabelColorValues.barva[(int)newCol]);
+        }
     }
     public enum LabelColors {
         None,
         Red,
         Blue,
         Green,
-        Yellow };
+        Yellow,
+        Violet,
+        Grey
+    };
     public static class LabelColorValues {
-        public static Color[] barva = {Color.FromArgb(0,0,0,0),Colors.Firebrick,Colors.SteelBlue,Colors.YellowGreen,Colors.Gold};
+        public static Color[] barva = {Color.FromArgb(0,0,0,0),Colors.Firebrick,Colors.SteelBlue,Colors.YellowGreen,Colors.Gold,Colors.Indigo,Colors.Gray};
     }
 }

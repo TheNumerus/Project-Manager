@@ -11,30 +11,35 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBox x:Name="ProjectName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Project Manager" VerticalAlignment="Top" Height="16" BorderThickness="0"/>
+        <TextBox x:Name="ProjectName" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Project Manager" VerticalAlignment="Top" BorderThickness="0" FontSize="16" TextChanged="SetNewWindowName"/>
         <TextBlock x:Name="VersionNumber" Margin="0,0,10,10" TextWrapping="Wrap" Text="{Binding Mode=OneWay, Source={StaticResource VersionNumber}}"
-                   HorizontalAlignment="Right" Height="16" VerticalAlignment="Bottom" Width="25" MouseDown="OpenAboutWindow"/>
+                   HorizontalAlignment="Right" VerticalAlignment="Bottom" MouseDown="OpenAboutWindow"/>
         <StackPanel Height="20" Margin="10,0,0,10" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Button x:Name="LoadButton" Content="Load File" Click="LoadButton_Click" Margin="0,0,5,0"/>
-            <Button x:Name="WriteButton" Content="Save File" Margin="5,0,5,0" Click="WriteButton_Click"/>
-            <Button x:Name="SettingsButton" Content="Settings" Margin="5,0,0,0" Click="SettingsButton_Click"/>
+            <Button x:Name="OpenButton" Content="Open File" Click="OpenButton_Click" Margin="0,0,5,0" BorderThickness="1" Padding="3,1"/>
+            <Button x:Name="LoadButton" Content="Load File" Click="LoadButton_Click" Margin="5,0,5,0" BorderThickness="1" Padding="3,1"/>
+            <Button x:Name="WriteButton" Content="Save File" Margin="5,0,5,0" Click="WriteButton_Click" Padding="3,1"/>
+            <Button x:Name="WriteAsButton" Content="Save As File" Margin="5,0,5,0" Click="WriteAsButton_Click" Padding="3,1"/>
+            <Button x:Name="SettingsButton" Content="Settings" Margin="5,0,0,0" Click="SettingsButton_Click" Padding="3,1"/>
         </StackPanel>
-        <ScrollViewer Margin="10,115,10,35">
+        <ScrollViewer Margin="10,115,10,35" Focusable="False">
             <StackPanel x:Name="Seznam" Margin="0">
-                <Grid Height="40" x:Name="ZakladniKarta" Margin="0" helper:MistoKartyVHierarchii.UrovenKarty="1">
+                <Grid Height="40" x:Name="ZakladniKarta" Margin="5" helper:CardHierarchy.CardLevel="1" Background="White" MouseLeftButtonDown="OpenDetailsWindow_Event">
+                    <Grid.Effect>
+                        <DropShadowEffect BlurRadius="10" Direction="270" Opacity="0.3"/>
+                    </Grid.Effect>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="10"/>
                         <RowDefinition/>
                         <RowDefinition Height="10"/>
                     </Grid.RowDefinitions>
-                    <TextBox x:Name="StandartPopisek" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="Edit task.." VerticalAlignment="Center" Grid.Row="1" BorderThickness="0"/>
+                    <TextBox x:Name="StandartPopisek" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="Edit task.." VerticalAlignment="Center" Grid.Row="1" BorderThickness="0" Background="{x:Null}"/>
                     <Button x:Name="StandartSmazat" Content="X" Margin="0,0,40,0" Grid.Row="1" HorizontalAlignment="Right" Padding="1" Width="20" Click="Smazat_polozku"/>
                     <Button x:Name="StandartPridat" Content="+" HorizontalAlignment="Right" Margin="0,0,10,0" Grid.Row="1" Padding="1" Width="20" Click="Pridat_polozku"/>
-                    <Rectangle x:Name="StandartLabel" Fill="#00000000" Height="4" VerticalAlignment="Top" Width="80" HorizontalAlignment="Left" Margin="10,0,0,0" MouseEnter="PrejetiLabeluOn" 
-                           MouseLeave="PrejetiLabeluOff" MouseLeftButtonDown="ZmenaBarvyLabelu" helper:LabelColorNumbers.ColorNumber="None" Stroke="#66000000"/>
-                    <Button x:Name="StandartDoleva" Content="&lt;" Margin="0,0,100,0" Grid.Row="1" HorizontalAlignment="Right" Padding="1" Width="20" Click="PresunNahoru"/>
+                    <Rectangle x:Name="StandartLabel" Fill="White" Height="7" VerticalAlignment="Top" Width="80" HorizontalAlignment="Left" Margin="10,0,0,0" helper:LabelColorNumbers.ColorNumber="None" Stroke="#33000000"/>
+                    <Button x:Name="StandartDoleva" Content="&lt;" Margin="0,0,90,0" Grid.Row="1" HorizontalAlignment="Right" Padding="1" Width="20" Click="PresunNahoru"/>
                     <Button x:Name="StandartDoprava" Content="&gt;" HorizontalAlignment="Right" Margin="0,0,70,0" Grid.Row="1" Padding="1" Width="20" Click="PresunDolu"/>
-
+                    <Button x:Name="StandartUp" Content="˄" Margin="0,0,120,0" Grid.Row="1" HorizontalAlignment="Right" Padding="1" Width="20" Click="MoveCardUp"/>
+                    <Button x:Name="StandartDown" Content="˅" HorizontalAlignment="Right" Margin="0,0,140,0" Grid.Row="1" Padding="1" Width="20" Click="MoveCardDown"/>
                 </Grid>
             </StackPanel>
         </ScrollViewer>

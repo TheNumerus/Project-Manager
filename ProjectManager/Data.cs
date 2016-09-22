@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ProjectManager.Helpers;
+using System.Xml.Serialization;
 
 namespace ProjectManager
 {
@@ -13,16 +14,25 @@ namespace ProjectManager
         public List<Data> Karty;
         public LabelColors labelColor;
         public int pozice;
-        public Data(string newNazev,LabelColors newLabelColor, int newPozice)
+        public string description;
+        public DateTime changeDate;
+        //not save following variable
+        [XmlIgnore]
+        public int GridID;
+        public Data(string novyNazev = "", LabelColors novyLabelColor = LabelColors.None, int novaPozice = 0, string desc = "", DateTime date = new DateTime(),int newID = 0)
         {
-            nazev = newNazev;
+            nazev = novyNazev;
             Karty = new List<Data>();
-            labelColor = newLabelColor;
-            pozice = newPozice;
+            labelColor = novyLabelColor;
+            pozice = novaPozice;
+            description = desc;
+            changeDate = date;
+            GridID = newID;
         }
+        //this construstor is here, so we can serialize this object
         public Data()
         {
-            Karty = new List<Data>();
+
         }
     }
 }
