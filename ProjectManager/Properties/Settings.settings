@@ -8,5 +8,17 @@
     <Setting Name="PathToFile" Type="System.String" Scope="User">
       <Value Profile="(Default)">database.xml</Value>
     </Setting>
+    <Setting Name="AccentColor" Type="System.Windows.Media.Color" Scope="User">
+      <Value Profile="(Default)">#FFFF8612</Value>
+    </Setting>
+    <Setting Name="DarkTheme" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="VersionNumber" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">0.4dev</Value>
+    </Setting>
+    <Setting Name="AccentColorShade" Type="System.Windows.Media.Color" Scope="User">
+      <Value Profile="(Default)">#FFFFB076</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

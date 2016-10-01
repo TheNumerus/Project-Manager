@@ -15,12 +15,16 @@ namespace ProjectManager
     public static class RuntimeData
     {
         //variable for loading data at runtime
-        public static Data runtimeData;
+        public static DatabaseInfo runtimeData;
+        //variable for undo and redo
+        public static List<Data> undoData = new List<Data>();
+        public static int step = 0;
 
         //load data to variable
         public static bool Load()
         {
-            runtimeData = new Data();
+            runtimeData = new DatabaseInfo();
+            runtimeData.list = new Data();
             String path = Properties.Settings.Default.PathToFile;
             //load file
             FileStream databaze;
@@ -31,43 +35,59 @@ namespace ProjectManager
             catch (System.IO.FileNotFoundException)
             {
                 ErrorWindow errorwindow = new ErrorWindow();
-                errorwindow.Title = "Soubor neexistuje";
-                errorwindow.ErrorMessage.Text = "Chyba! Soubor neexistuje.";
+                errorwindow.Title = "File doesn't exist.";
+                errorwindow.ErrorMessage.Text = "Error! File does not exist.";
                 errorwindow.Show();
-                runtimeData = new Data();
+                runtimeData = new DatabaseInfo();
+                runtimeData.list = new Data();
                 return false;
             }
             catch (System.UnauthorizedAccessException)
             {
                 ErrorWindow errorwindow = new ErrorWindow();
-                errorwindow.Title = "Nedostatečná práva";
-                errorwindow.ErrorMessage.Text = "Chyba! Program nemá potřebná práva pro načtení souboru.";
+                errorwindow.Title = "Insufficient rights";
+                errorwindow.ErrorMessage.Text = "Error! App has insufficient rights to open this file. Please launch this app as admin.";
                 errorwindow.Show();
-                runtimeData = new Data();
+                runtimeData = new DatabaseInfo();
+                runtimeData.list = new Data();
                 return false;
             }
             StreamReader sr = new StreamReader(databaze);
-            XmlSerializer xs = new XmlSerializer(typeof(Data));
+            XmlSerializer xs = new XmlSerializer(typeof(DatabaseInfo));
             //handle corrupted file
             try
             {
-                runtimeData = (Data)xs.Deserialize(sr);
+                runtimeData = (DatabaseInfo)xs.Deserialize(sr);
             }
             catch (System.InvalidOperationException)
             {
                 ErrorWindow errorwindow = new ErrorWindow();
                 errorwindow.Title = "XML Error";
-                errorwindow.ErrorMessage.Text = "Chyba! Soubor s databází je poškozen.";
+                errorwindow.ErrorMessage.Text = "Error! This database file is corrupted.";
                 errorwindow.Show();
                 sr.Close();
                 databaze.Close();
-                runtimeData = new Data();
+                runtimeData = new DatabaseInfo();
+                runtimeData.list = new Data();
+                return false;
+            }
+            catch (System.InvalidCastException) {
+                ErrorWindow errorwindow = new ErrorWindow();
+                errorwindow.Title = "Database Error";
+                errorwindow.ErrorMessage.Text = "Error! This database file is obsolete.";
+                errorwindow.Show();
+                sr.Close();
+                databaze.Close();
+                runtimeData = new DatabaseInfo();
+                runtimeData.list = new Data();
                 return false;
             }
             //handle empty file
             if (runtimeData == null) {
-                runtimeData = new Data();
+                runtimeData = new DatabaseInfo();
+                runtimeData.list = new Data();
             }
+            RecordUndo();
             sr.Close();
             databaze.Close();
             return true;
@@ -76,7 +96,8 @@ namespace ProjectManager
         public static void Generate(StackPanel List, TextBox ProjectName) {
             //handle empty runtime data
             if (runtimeData == null) {
-                runtimeData = new Data();
+                runtimeData = new DatabaseInfo();
+                runtimeData.list = new Data();
             }
             Data runtimeDataNew = new Data(ProjectName.Text, LabelColors.None, 0);
             //this variable is basicly a path reference
@@ -101,7 +122,7 @@ namespace ProjectManager
                     //if card above has bigger hierarchy level, we save that data there
                     if (CardHierarchy.GetCardLevel((Grid)List.Children[i - 1]) < CardHierarchy.GetCardLevel((Grid)List.Children[i]))
                     {
-                        PlaceToSave = PlaceToSave.Karty[PlaceToSave.Karty.Count - 1];
+                        PlaceToSave = PlaceToSave.cards[PlaceToSave.cards.Count - 1];
                     }
                     //if card above has lower hierarchy level, we save that card into parent of card, with the same hierarchy
                     else if (CardHierarchy.GetCardLevel((Grid)List.Children[i - 1]) > CardHierarchy.GetCardLevel((Grid)List.Children[i]))
@@ -111,16 +132,21 @@ namespace ProjectManager
                     }
                     //if card above has same hierarchy level, we save it in same location
                     Data DataToAdd = new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)card.Children[3]), CardHierarchy.GetCardLevel(card), newID: card.GetHashCode());
-                    PlaceToSave.Karty.Add(DataToAdd);
+                    PlaceToSave.cards.Add(DataToAdd);
                     //if there was a data object with description, we add that description back
-                    if (FindByID(card.GetHashCode(), runtimeData) != null) {
-                        DataToAdd.description = FindByID(card.GetHashCode(), runtimeData).description;
-                        DataToAdd.changeDate = FindByID(card.GetHashCode(), runtimeData).changeDate;
+                    if (FindByID(card.GetHashCode(), runtimeData.list) != null)
+                    {
+                        DataToAdd.description = FindByID(card.GetHashCode(), runtimeData.list).description;
+                        DataToAdd.changeDate = FindByID(card.GetHashCode(), runtimeData.list).changeDate;
+                    }
+                    else {
+                        DataToAdd.description = "Edit description...";
+                        DataToAdd.changeDate = DateTime.Now;
                     }
                 }
             }
             //here we replace old data with new data
-            runtimeData = runtimeDataNew;
+            runtimeData.list = runtimeDataNew;
         }
         public static void Save() {
             String path = Properties.Settings.Default.PathToFile;
@@ -139,7 +165,7 @@ namespace ProjectManager
                 return;
             }
             StreamWriter sw = new StreamWriter(database);
-            XmlSerializer xs = new XmlSerializer(typeof(Data));
+            XmlSerializer xs = new XmlSerializer(typeof(DatabaseInfo));
             xs.Serialize(sw, runtimeData);
             sw.Close();
             database.Close();
@@ -148,7 +174,7 @@ namespace ProjectManager
         public static Data FindDataParent(Data root, Data ChildOfElement)
         {
             Data foundElement = null;
-            foreach (Data d in root.Karty)
+            foreach (Data d in root.cards)
             {
                 if (d.Equals(ChildOfElement))
                 {
@@ -170,9 +196,9 @@ namespace ProjectManager
         public static Data FindDataByHierarchy(Data root,int hierarchyNumber)
         {
             Data foundElement = null;
-            foreach (Data d in root.Karty)
+            foreach (Data d in root.cards)
             {
-                if (d.pozice == hierarchyNumber)
+                if (d.level == hierarchyNumber)
                 {
                     foundElement = d;
                 }
@@ -193,8 +219,8 @@ namespace ProjectManager
             else
             {
                 //handle no childs
-                if (root.Karty != null) {
-                    foreach (Data d in root.Karty)
+                if (root.cards != null) {
+                    foreach (Data d in root.cards)
                     {
                         foundElement = FindByID(ID, d);
                         if (foundElement != null) {
@@ -205,5 +231,27 @@ namespace ProjectManager
             }
             return foundElement;
         }
+        //methods for undo and redo
+        public static void RecordUndo() {
+            step++;
+            Data copy = runtimeData.list.Copy();
+            undoData.Add(copy);
+        }
+        public static void Undo() {
+            step--;
+            runtimeData.list = undoData[step-1];
+        }
+        public static void ResetUndo() {
+            undoData = new List<Data>() {runtimeData.list};
+            step = 0;
+        }
+        public static void Redo() {
+            //handle bigger index out of range
+            if (step+1 < undoData.Count) {
+                step++;
+            }
+            runtimeData.list = undoData[step];
+        }
+
     }
 }

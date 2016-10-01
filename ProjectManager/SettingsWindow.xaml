@@ -4,10 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProjectManager"
+        xmlns:Properties="clr-namespace:ProjectManager.Properties"
         mc:Ignorable="d"
-        Title="Settings" Height="120" Width="229.832">
-    <Grid>
-        <CheckBox x:Name="LoadOnStartCheckBox" Content="Load file on start" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="LoadOnStart_Click"/>
+        Title="Settings" Height="140" Width="300" ResizeMode="NoResize" FontFamily="Roboto">
+    <Grid Background="{DynamicResource BackgroundColor}">
 
+        <StackPanel Margin="10">
+            <CheckBox x:Name="LoadOnStartCheckBox" Content="Load file on start" HorizontalAlignment="Left" Margin="10,5,0,5" VerticalAlignment="Center" Click="LoadOnStart_Click" Foreground="{DynamicResource DescriptionColor}"/>
+            <CheckBox x:Name="DarkThemeCheckBox" Content="Dark Theme" HorizontalAlignment="Left" Margin="10,5,0,5" VerticalAlignment="Center" Click="ThemeChange_Click" Foreground="{DynamicResource DescriptionColor}"/>
+            <StackPanel Margin="10,5" Orientation="Horizontal">
+                <TextBlock Text="Accent Color" Foreground="{DynamicResource DescriptionColor}" Margin="5,0" VerticalAlignment="Center" />
+                <TextBox x:Name="ColorSelector" Margin="5,0" Text="{Binding Source={ x:Static Properties:Settings.Default}, Path=AccentColor}" VerticalAlignment="Center" Width="70"/>
+                <Button  Content="Set color" Margin="5,0" Style="{DynamicResource ButtonMain}" Click="SaveColorValue"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>

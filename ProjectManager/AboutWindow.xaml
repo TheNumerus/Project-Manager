@@ -4,15 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ProjectManager"
+        xmlns:Properties="clr-namespace:ProjectManager.Properties"
         mc:Ignorable="d"
-        Title="About" Height="150.42" Width="300" ShowInTaskbar="False" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
-    <Grid>
-        <Label x:Name="ProgramName" HorizontalAlignment="Center" Margin="0,10,0,0" Content="Project Manager" VerticalAlignment="Top" FontSize="20"/>
+        Title="About" Height="150.42" Width="300" ShowInTaskbar="False" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" FontFamily="Roboto">
+    <Grid Background="{DynamicResource BackgroundColor}">
+        <Label x:Name="ProgramName" HorizontalAlignment="Center" Margin="0,10,0,0" Content="Project Manager" VerticalAlignment="Top" FontSize="20" Foreground="White"/>
         <StackPanel HorizontalAlignment="Center" Margin="0,0,0,10" VerticalAlignment="Bottom" Orientation="Horizontal">
-            <TextBlock x:Name="textBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Version: " VerticalAlignment="Top"/>
-            <TextBlock x:Name="VersionNumberBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="{DynamicResource VersionNumber}" VerticalAlignment="Top"/>
+            <TextBlock x:Name="textBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding Source={x:Static Properties:Settings.Default},Path=VersionNumber}" VerticalAlignment="Top" Foreground="White"/>
         </StackPanel>
-        <TextBlock x:Name="textBlock1" HorizontalAlignment="Center" Margin="0,68,0,0" TextWrapping="Wrap" Text="Created by: Petr Volf" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlock1" HorizontalAlignment="Center" Margin="0,68,0,0" TextWrapping="Wrap" Text="Created by: Petr Volf" VerticalAlignment="Top" Foreground="White"/>
 
     </Grid>
 </Window>

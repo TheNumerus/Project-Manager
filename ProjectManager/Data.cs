@@ -10,21 +10,21 @@ namespace ProjectManager
 {
     public class Data
     {
-        public string nazev;
-        public List<Data> Karty;
+        public string name;
+        public List<Data> cards;
         public LabelColors labelColor;
-        public int pozice;
+        public int level;
         public string description;
         public DateTime changeDate;
         //not save following variable
         [XmlIgnore]
         public int GridID;
-        public Data(string novyNazev = "", LabelColors novyLabelColor = LabelColors.None, int novaPozice = 0, string desc = "", DateTime date = new DateTime(),int newID = 0)
+        public Data(string newName = "", LabelColors newLabelColor = LabelColors.None, int newLevel = 0, string desc = "", DateTime date = new DateTime(),int newID = 0)
         {
-            nazev = novyNazev;
-            Karty = new List<Data>();
-            labelColor = novyLabelColor;
-            pozice = novaPozice;
+            name = newName;
+            cards = new List<Data>();
+            labelColor = newLabelColor;
+            level = newLevel;
             description = desc;
             changeDate = date;
             GridID = newID;

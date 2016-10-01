@@ -46,5 +46,50 @@ namespace ProjectManager.Properties {
                 this["PathToFile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFFF8612")]
+        public global::System.Windows.Media.Color AccentColor {
+            get {
+                return ((global::System.Windows.Media.Color)(this["AccentColor"]));
+            }
+            set {
+                this["AccentColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DarkTheme {
+            get {
+                return ((bool)(this["DarkTheme"]));
+            }
+            set {
+                this["DarkTheme"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.4dev")]
+        public string VersionNumber {
+            get {
+                return ((string)(this["VersionNumber"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFFFB076")]
+        public global::System.Windows.Media.Color AccentColorShade {
+            get {
+                return ((global::System.Windows.Media.Color)(this["AccentColorShade"]));
+            }
+            set {
+                this["AccentColorShade"] = value;
+            }
+        }
     }
 }

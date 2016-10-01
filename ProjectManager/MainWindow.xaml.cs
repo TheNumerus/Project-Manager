@@ -29,28 +29,33 @@ namespace ProjectManager
         public MainWindow()
         {
             InitializeComponent();
-            Grid novaKarta = new Grid();
-            PridaniKarty(out novaKarta);
-            Seznam.Children.Add(novaKarta);
-            //zakladni karta je neviditelna aby nesla smazat a upravit
+            Grid newCard = new Grid();
+            CreateCard(out newCard);
+            Seznam.Children.Add(newCard);
+            //main card is invisible, so user can't change it
             ZakladniKarta.Visibility = Visibility.Collapsed;
-            //pokud uzivatel chce, muze aplikace nacitst data pri startu
+            //if user wants, app can load file on start
             if (Properties.Settings.Default.LoadOnStart) {
-                Promazani();
+                DeleteAllCards();
                 if (!RuntimeData.Load())
                 {
-                    novaKarta = new Grid();
-                    PridaniKarty(out novaKarta);
-                    Seznam.Children.Add(novaKarta);
+                    newCard = new Grid();
+                    CreateCard(out newCard);
+                    Seznam.Children.Add(newCard);
                     RuntimeData.Generate(Seznam,ProjectName);
+                    AddCardInfo((Grid)Seznam.Children[1]);
                 }
                 else
                 {
-                    NahraniDoSeznamu(RuntimeData.runtimeData);
-                    ProjectName.Text = RuntimeData.runtimeData.nazev;
+                    GenerateFromData(RuntimeData.runtimeData.list);
+                    ProjectName.Text = RuntimeData.runtimeData.list.name;
+                    //autofocus first card
+                    AddCardInfo((Grid)Seznam.Children[1]);
                 }
             }
             SetWindowName();
+            
+            
         }
         //method for setting new window name
         public void SetWindowName() {
@@ -58,79 +63,79 @@ namespace ProjectManager
             label+="Project Manager - " + ProjectName.Text;
             this.Title = label;
         }
-        //Metody pro zjednoduseni event handleru a pro mozne pouziti ve vice eventech
-        public void PridaniKarty(out Grid novaKarta)
+        //Methods for simplifiyng event handlers
+        public void CreateCard(out Grid newCard)
         {
-            //zparsovani do stringu a nasledne nakopirovani
+            //parsing to string and generating new card
             var xaml = XamlWriter.Save(ZakladniKarta);
             StringReader stringReader = new StringReader(xaml);
             XmlReader xmlReader = XmlReader.Create(stringReader);
-            novaKarta = (Grid)XamlReader.Load(xmlReader);
-            //pridani eventu k tlacitkum a labelu
-            ((Button)novaKarta.Children[1]).Click += Smazat_polozku;
-            ((Button)novaKarta.Children[2]).Click += Pridat_polozku;
-            ((Button)novaKarta.Children[4]).Click += PresunNahoru;
-            ((Button)novaKarta.Children[5]).Click += PresunDolu;
-            ((Button)novaKarta.Children[6]).Click += MoveCardUp;
-            ((Button)novaKarta.Children[7]).Click += MoveCardDown;
+            newCard = (Grid)XamlReader.Load(xmlReader);
+            //adding event handlers
+            ((Button)newCard.Children[1]).Click += DeleteCard;
+            ((Button)newCard.Children[2]).Click += AddNewCard;
+            ((Button)newCard.Children[4]).Click += MoveLeftButton_Click;
+            ((Button)newCard.Children[5]).Click += MoveRightButton_Click;
+            ((Button)newCard.Children[6]).Click += MoveCardUp;
+            ((Button)newCard.Children[7]).Click += MoveCardDown;
             //add event to open detail window
-            novaKarta.MouseDown += OpenDetailsWindow_Event;
-            //zakladni karta je neviditelna, takze jeji kopie se musi zviditelnit
-            novaKarta.Visibility = Visibility.Visible;
+            newCard.MouseDown += ClickCardEvent;
+            //main card is invisible, so we must set new card to be visible
+            newCard.Visibility = Visibility.Visible;
         }
-        //smaze vsechny polozky v seznamu
-        public void Promazani() {
+        //deletes all cards
+        public void DeleteAllCards() {
             for (int i = Seznam.Children.Count; i > 1; i--) {
                 Seznam.Children.RemoveAt(i-1);
             }
         }
-        //aby bylo podporovano nahrani deti, musi existovat rekurzivni funkce
-        public void NahraniDoSeznamu(Data data) {
-            //nacteni sebe, pokud to neni koren celeho seznamu
-            if (data.pozice != 0)
+        //to be able to load children, we must have recursive function
+        public void GenerateFromData(Data data) {
+            //load self, if not root of list
+            if (data.level != 0)
             {
-                PridaniDoSeznamu(data);
+                AddToList(data);
             }
-            //nacteni deti
-            for (int i = 0; i < data.Karty.Count; i++)
+            //load children
+            for (int i = 0; i < data.cards.Count; i++)
             {
-                PridaniDoSeznamu(data.Karty[i]);
-                //pokud ma dite deti tak to vypise i je
-                foreach (Data d in data.Karty[i].Karty) {
-                    NahraniDoSeznamu(d);
+                AddToList(data.cards[i]);
+                //if child had children, add them too
+                foreach (Data d in data.cards[i].cards) {
+                    GenerateFromData(d);
                 }
             }
         }
-        public void PridaniDoSeznamu(Data data) {
-            Grid novaKarta = new Grid();
-            PridaniKarty(out novaKarta);
-            ((TextBox)novaKarta.Children[0]).Text = data.nazev;
-            //nastaveni barevnych labelu
-            Rectangle LabelNew = (Rectangle)(novaKarta.Children[3]);
+        public void AddToList(Data data) {
+            Grid newCard = new Grid();
+            CreateCard(out newCard);
+            ((TextBox)newCard.Children[0]).Text = data.name;
+            //set label color
+            Rectangle LabelNew = (Rectangle)(newCard.Children[3]);
             LabelColorNumbers.SetColorNumber(LabelNew, data.labelColor);
-            CardHierarchy.SetCardLevel(novaKarta, data.pozice);
+            CardHierarchy.SetCardLevel(newCard, data.level);
             LabelNew.Fill = new SolidColorBrush(LabelColorValues.barva[(int)data.labelColor]);
-            //nastaveni marginu podle urovne karty
-            Thickness marginNew = novaKarta.Margin;
-            marginNew.Left = (CardHierarchy.GetCardLevel(novaKarta) - 1) * 20 + 5;
-            novaKarta.Margin = marginNew;
-            //pridani karty do seznamu
-            Seznam.Children.Add(novaKarta);
+            //set margin according to hierarchy level
+            Thickness marginNew = newCard.Margin;
+            marginNew.Left = (CardHierarchy.GetCardLevel(newCard) - 1) * 20 + 5;
+            newCard.Margin = marginNew;
+            //add card to list
+            Seznam.Children.Add(newCard);
             //add hash of the created grid to data, so they bind together
-            data.GridID = novaKarta.GetHashCode();
+            data.GridID = newCard.GetHashCode();
 
         }
         //methods for moving cards in hierarchy
         public void MoveCardLeft(Grid card,int steps = 1) {
             for (int i = 0; i < steps; i++)
             {
-                Thickness staryMargin = card.Margin;
+                Thickness oldMargin = card.Margin;
                 if (CardHierarchy.GetCardLevel(card) > 1)
                 {
                     CardHierarchy.SetCardLevel(card, CardHierarchy.GetCardLevel(card) - 1);
-                    staryMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20 + 5;
+                    oldMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20 + 5;
                 }
-                card.Margin = staryMargin;
+                card.Margin = oldMargin;
             }
             RuntimeData.Generate(Seznam, ProjectName);
         }
@@ -138,16 +143,16 @@ namespace ProjectManager
         {
             for (int i = 0; i < steps; i++)
             {
-                Thickness staryMargin = card.Margin;
-                Data data = RuntimeData.FindByID(card.GetHashCode(), RuntimeData.runtimeData);
-                Data parent = RuntimeData.FindDataParent(RuntimeData.runtimeData, data);
+                Thickness oldMargin = card.Margin;
+                Data data = RuntimeData.FindByID(card.GetHashCode(), RuntimeData.runtimeData.list);
+                Data parent = RuntimeData.FindDataParent(RuntimeData.runtimeData.list, data);
                 //if parent has a child above moved card, move can happen
-                if (CardHierarchy.GetCardLevel(card) < 4 &&  parent.Karty.IndexOf(data) >= 1)
+                if (CardHierarchy.GetCardLevel(card) < 4 &&  parent.cards.IndexOf(data) >= 1)
                 {
                     CardHierarchy.SetCardLevel(card, CardHierarchy.GetCardLevel(card) + 1);
-                    staryMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20 + 5;
+                    oldMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20 + 5;
                 }
-                card.Margin = staryMargin;
+                card.Margin = oldMargin;
             }
             RuntimeData.Generate(Seznam, ProjectName);
         }
@@ -168,20 +173,20 @@ namespace ProjectManager
                 }
             }
         }
-        //eventy pro tlacitka
+        //events for buttons
         private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
-            Promazani();
+            DeleteAllCards();
             if (!RuntimeData.Load())
             {
-                Grid novaKarta = new Grid();
-                PridaniKarty(out novaKarta);
-                Seznam.Children.Add(novaKarta);
+                Grid newCard = new Grid();
+                CreateCard(out newCard);
+                Seznam.Children.Add(newCard);
             }
             else
             {
-                NahraniDoSeznamu(RuntimeData.runtimeData);
-                ProjectName.Text = RuntimeData.runtimeData.nazev;
+                GenerateFromData(RuntimeData.runtimeData.list);
+                ProjectName.Text = RuntimeData.runtimeData.list.name;
             }
         }
 
@@ -191,33 +196,52 @@ namespace ProjectManager
             RuntimeData.Save();
         }
 
-        private void Pridat_polozku(object sender, RoutedEventArgs e)
+        private void AddNewCard(object sender, RoutedEventArgs e)
         {
             Grid card = new Grid();
-            PridaniKarty(out card);
+            CreateCard(out card);
             //get card number which sent the event, so we can add new card just under it
-            int cisloKarty = Seznam.Children.IndexOf((Grid)((Button)sender).Parent);
-            Seznam.Children.Insert(cisloKarty + 1, card);
+            int cardIndex = Seznam.Children.IndexOf((Grid)((Button)sender).Parent);
+            Seznam.Children.Insert(cardIndex + 1, card);
             RuntimeData.Generate(Seznam, ProjectName);
             //here we assign new date to card data
-            Data data = RuntimeData.FindByID(card.GetHashCode(), RuntimeData.runtimeData);
+            Data data = RuntimeData.FindByID(card.GetHashCode(), RuntimeData.runtimeData.list);
             data.changeDate = DateTime.Now;
+            //focus new card
+            AddCardInfo((Grid)Seznam.Children[cardIndex + 1]);
         }
 
-        private void Smazat_polozku(object sender, RoutedEventArgs e)
+        private void DeleteCard(object sender, RoutedEventArgs e)
         {
-            Seznam.Children.Remove((Grid)((Button)sender).Parent);
+            RuntimeData.RecordUndo();
+
+            //delete multiple cards
+            int cardsDeleted = 0;
+            for (int i = 0; i < Seznam.Children.Count - 1; i ++)
+            {
+                if (Selection.GetSelection(Seznam.Children[i]) == true)
+                {
+                    Seznam.Children.RemoveAt(i);
+                    i--;
+                    cardsDeleted++;
+                }
+            }
+            //delete self
+            if (cardsDeleted == 0) {
+                Seznam.Children.Remove((Grid)((Button)sender).Parent);
+            }
+            RuntimeData.Generate(Seznam,ProjectName);
             //avoid empty list
             if (Seznam.Children.Count == 1)
             {
-                Grid Karta = new Grid();
-                PridaniKarty(out Karta);
-                Seznam.Children.Add(Karta);
+                Grid newCard = new Grid();
+                CreateCard(out newCard);
+                Seznam.Children.Add(newCard);
                 RuntimeData.Generate(Seznam, ProjectName);
             }
         }
-        //zajisteni presunu nahoru a dolu
-        private void PresunNahoru(object sender, RoutedEventArgs e)
+        //moving up and down
+        private void MoveLeftButton_Click(object sender, RoutedEventArgs e)
         {
             Button btn = (Button)sender;
             int index = Seznam.Children.IndexOf((UIElement)btn.Parent);
@@ -225,7 +249,7 @@ namespace ProjectManager
             MoveCardLeft(card);
             SortAllCards(Seznam);
         }
-        private void PresunDolu(object sender, RoutedEventArgs e)
+        private void MoveRightButton_Click(object sender, RoutedEventArgs e)
         {
             Button btn = (Button)sender;
             int index = Seznam.Children.IndexOf((UIElement)btn.Parent);
@@ -246,17 +270,19 @@ namespace ProjectManager
             sw.Show();
         }
         //open details window
-        private void OpenDetailsWindow_Event(object sender, MouseButtonEventArgs e)
+        private void ClickCardEvent(object sender, MouseButtonEventArgs e)
         {
-            //Ensure that the event is double-click
-            if (e.ClickCount == 2)
-            {
-                //open window and set parameters
-                DetailsWindow detWin = new DetailsWindow();
-                detWin.AddCardInfo((Grid)sender);
-                detWin.Show();
-                //set focus to newly opened window
-                detWin.Focus();
+            AddCardInfo((Grid)sender);
+            //handling shift click to select card
+            if (Keyboard.IsKeyDown(Key.LeftShift)) {
+                Selection.ToggleSelecetion((Grid)sender);
+                if (!Selection.GetSelection((Grid)sender))
+                {
+                    ((Grid)sender).Background = new SolidColorBrush(Colors.White);
+                }
+                else {
+                    ((Grid)sender).SetResourceReference(BackgroundProperty, "AccentBackground");
+                }
             }
         }
         //move card up and down
@@ -300,17 +326,17 @@ namespace ProjectManager
             if (openFileDialog.ShowDialog() == true)
             {
                 Properties.Settings.Default.PathToFile = openFileDialog.FileName;
-                Promazani();
+                DeleteAllCards();
                 if (!RuntimeData.Load())
                 {
                     Grid novaKarta = new Grid();
-                    PridaniKarty(out novaKarta);
+                    CreateCard(out novaKarta);
                     Seznam.Children.Add(novaKarta);
                 }
                 else
                 {
-                    NahraniDoSeznamu(RuntimeData.runtimeData);
-                    ProjectName.Text = RuntimeData.runtimeData.nazev;
+                    GenerateFromData(RuntimeData.runtimeData.list);
+                    ProjectName.Text = RuntimeData.runtimeData.list.name;
                 }
             }
             SetWindowName();
@@ -330,6 +356,83 @@ namespace ProjectManager
         private void SetNewWindowName(object sender, TextChangedEventArgs e)
         {
             SetWindowName();
+        }
+        //events for details subwindow
+
+        //reference to card
+        public Grid Card;
+        public Data attachedData;
+        //Here we add content info from card
+        public void AddCardInfo(Grid SourceCard)
+        {
+            Card = SourceCard;
+            attachedData = RuntimeData.FindByID(Card.GetHashCode(), RuntimeData.runtimeData.list);
+            nameBox.Text = ((TextBox)(Card.Children[0])).Text;
+            //descBox.Text = ((TextBox)(Card.Children[0])).Text;
+            LabelRect.Fill = new SolidColorBrush(LabelColorValues.barva[(int)LabelColorNumbers.GetColorNumber(Card.Children[3])]);
+            LabelColorNumbers.SetColorNumber(LabelRect, LabelColorNumbers.GetColorNumber(Card.Children[3]));
+            //handling empty reference
+            if (attachedData != null)
+            {
+                descBox.Text = attachedData.description;
+                //handle empty date
+                if (attachedData.changeDate.Year != 1)
+                {
+                    dateBlock.Text = attachedData.changeDate.Date.ToLongDateString();
+                }
+                else
+                {
+                    dateBlock.Visibility = Visibility.Hidden;
+                }
+            }
+        }
+
+        private void NameChanged_Event(object sender, TextChangedEventArgs e)
+        {
+            //ensure the card is set
+            if (Card != null)
+            {
+                ((TextBox)(Card.Children[0])).Text = nameBox.Text;
+            }
+        }
+        //set new label color in window and update card label
+        private void LabelChange_Event(object sender, MouseButtonEventArgs e)
+        {
+            LabelColorNumbers.LabelColorChange(LabelRect, 1);
+            LabelColorNumbers.LabelColorChange((Rectangle)(Card.Children[3]), 1);
+            attachedData.labelColor = LabelColorNumbers.GetColorNumber(LabelRect);
+        }
+
+        private void DescChanged_Event(object sender, TextChangedEventArgs e)
+        {
+            //ensure the card is set
+            if (Card != null && descBox.Text != null)
+            {
+                attachedData.description = descBox.Text;
+            }
+        }
+        //resets focuses and selection
+        private void ResetFocus(object sender, MouseButtonEventArgs e)
+        {
+            ((UIElement)sender).Focus();
+            foreach (Grid card in Seznam.Children) {
+                Selection.SetSelecetion((UIElement)sender, false);
+            }
+        }
+
+        private void UndoButton_Click(object sender, RoutedEventArgs e)
+        {
+            RuntimeData.RecordUndo();
+            RuntimeData.Undo();
+            DeleteAllCards();
+            GenerateFromData(RuntimeData.runtimeData.list);
+        }
+
+        private void RedoButton_Click(object sender, RoutedEventArgs e)
+        {
+            RuntimeData.Redo();
+            DeleteAllCards();
+            GenerateFromData(RuntimeData.runtimeData.list);
         }
     }
 }

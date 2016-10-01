@@ -14,6 +14,24 @@ namespace ProjectManager
     /// </summary>
     public partial class Application : System.Windows.Application
     {
-        
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            //set light-dark theme
+            if (ProjectManager.Properties.Settings.Default.DarkTheme) {
+                ChangeTheme(new Uri("pack://application:,,,/Themes/DarkTheme.xaml") );
+            }
+            else{
+                ChangeTheme(new Uri("pack://application:,,,/Themes/LightTheme.xaml"));
+            }
+            MainWindow mw = new MainWindow();
+            mw.Show();
+        }
+
+        public void ChangeTheme(Uri uri)
+        {
+            Resources.MergedDictionaries.Clear();
+            Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = uri });
+        }
     }
 }
