@@ -20,11 +20,16 @@ namespace ProjectManager
     /// </summary>
     public partial class SettingsWindow : Window
     {
+
+        byte a, r, g, b;
         public SettingsWindow()
         {
             InitializeComponent();
             LoadOnStartCheckBox.IsChecked = Properties.Settings.Default.LoadOnStart;
             DarkThemeCheckBox.IsChecked = Properties.Settings.Default.DarkTheme;
+            Red.Value = Properties.Settings.Default.AccentColor.R;
+            Green.Value = Properties.Settings.Default.AccentColor.G;
+            Blue.Value = Properties.Settings.Default.AccentColor.B;
 
         }
 
@@ -50,7 +55,6 @@ namespace ProjectManager
         private void SaveColorValue(object sender, RoutedEventArgs e)
         {
             string ColorString = ColorSelector.Text;
-            byte a, r, g, b;
             try
             {
                 a = Convert.ToByte(ColorString.Substring(1, 2),16);
@@ -68,6 +72,16 @@ namespace ProjectManager
             }
             Properties.Settings.Default.AccentColor = Color.FromArgb(a, r, g, b);
             Properties.Settings.Default.AccentColorShade = ColorOperarions.ShadeColor(Color.FromArgb(a, r, g, b));
+            Properties.Settings.Default.Save();
+        }
+
+        private void UpdateColorValue(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            r = (byte)Red.Value;
+            g = (byte)Green.Value;
+            b = (byte)Blue.Value;
+            Properties.Settings.Default.AccentColor = Color.FromArgb(255, r, g, b);
+            Properties.Settings.Default.AccentColorShade = ColorOperarions.ShadeColor(Properties.Settings.Default.AccentColor);
             Properties.Settings.Default.Save();
         }
     }

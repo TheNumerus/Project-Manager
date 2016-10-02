@@ -49,7 +49,7 @@ namespace ProjectManager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FFFF8612")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF0066CC")]
         public global::System.Windows.Media.Color AccentColor {
             get {
                 return ((global::System.Windows.Media.Color)(this["AccentColor"]));
@@ -82,7 +82,7 @@ namespace ProjectManager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FFFFB076")]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF99CCFF")]
         public global::System.Windows.Media.Color AccentColorShade {
             get {
                 return ((global::System.Windows.Media.Color)(this["AccentColorShade"]));

@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:ProjectManager"
         xmlns:Properties="clr-namespace:ProjectManager.Properties"
         mc:Ignorable="d"
-        Title="Settings" Height="140" Width="300" ResizeMode="NoResize" FontFamily="Roboto">
+        Title="Settings" Height="220
+        " Width="300" ResizeMode="NoResize" FontFamily="Roboto">
     <Grid Background="{DynamicResource BackgroundColor}">
 
         <StackPanel Margin="10">
@@ -17,6 +18,9 @@
                 <TextBox x:Name="ColorSelector" Margin="5,0" Text="{Binding Source={ x:Static Properties:Settings.Default}, Path=AccentColor}" VerticalAlignment="Center" Width="70"/>
                 <Button  Content="Set color" Margin="5,0" Style="{DynamicResource ButtonMain}" Click="SaveColorValue"/>
             </StackPanel>
+            <Slider x:Name="Red" Maximum="255" LargeChange="5" SmallChange="1" Margin="5,3" ValueChanged="UpdateColorValue" Value="{Binding Mode=OneTime, Source={x:Static Properties:Settings.Default}, Path=AccentColor.R, FallbackValue=0}" />
+            <Slider x:Name="Green" Maximum="255" LargeChange="5" SmallChange="1" Margin="5,3" ValueChanged="UpdateColorValue" Value="{Binding Mode=OneTime, Source={x:Static Properties:Settings.Default}, Path=AccentColor.G, FallbackValue=0}"/>
+            <Slider x:Name="Blue" Maximum="255" LargeChange="5" SmallChange="1" Margin="5,3" ValueChanged="UpdateColorValue" Value="{Binding Mode=OneTime, Source={x:Static Properties:Settings.Default}, Path=AccentColor.B, FallbackValue=0}"/>
         </StackPanel>
     </Grid>
 </Window>

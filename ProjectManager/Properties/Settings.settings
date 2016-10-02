@@ -9,7 +9,7 @@
       <Value Profile="(Default)">database.xml</Value>
     </Setting>
     <Setting Name="AccentColor" Type="System.Windows.Media.Color" Scope="User">
-      <Value Profile="(Default)">#FFFF8612</Value>
+      <Value Profile="(Default)">#FF0066CC</Value>
     </Setting>
     <Setting Name="DarkTheme" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -18,7 +18,7 @@
       <Value Profile="(Default)">0.4dev</Value>
     </Setting>
     <Setting Name="AccentColorShade" Type="System.Windows.Media.Color" Scope="User">
-      <Value Profile="(Default)">#FFFFB076</Value>
+      <Value Profile="(Default)">#FF99CCFF</Value>
     </Setting>
   </Settings>
 </SettingsFile>
