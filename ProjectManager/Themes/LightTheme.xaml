@@ -7,6 +7,9 @@
     <SolidColorBrush x:Key="CardColor" Color="{Binding Source={x:Static prop:Settings.Default} , Path=AccentColorShade}"/>
     <SolidColorBrush x:Key="AccentBackgroundBrush" Color="{Binding Source={x:Static prop:Settings.Default} , Path=AccentColor}"/>
     <SolidColorBrush x:Key="DescriptionColor" Color="Black"/>
+    <Style x:Key="RobotoFont">
+        <Setter Property="TextElement.FontFamily" Value="Themes/#Roboto"/>
+    </Style>
 
     <ControlTemplate x:Key="ButtonTemplate" TargetType="Button">
         <Grid>

@@ -30,7 +30,6 @@ namespace ProjectManager
             Red.Value = Properties.Settings.Default.AccentColor.R;
             Green.Value = Properties.Settings.Default.AccentColor.G;
             Blue.Value = Properties.Settings.Default.AccentColor.B;
-
         }
 
         private void LoadOnStart_Click(object sender, RoutedEventArgs e)
@@ -77,12 +76,21 @@ namespace ProjectManager
 
         private void UpdateColorValue(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            r = (byte)Red.Value;
-            g = (byte)Green.Value;
-            b = (byte)Blue.Value;
-            Properties.Settings.Default.AccentColor = Color.FromArgb(255, r, g, b);
-            Properties.Settings.Default.AccentColorShade = ColorOperarions.ShadeColor(Properties.Settings.Default.AccentColor);
-            Properties.Settings.Default.Save();
+            if (Red == null || Green == null || Blue == null)
+            {
+                r = Red != null ? (byte)Red.Value : (byte)0;
+                g = Green != null ? (byte)Green.Value : (byte)0;
+                b = Blue != null ? (byte)Blue.Value : (byte)0;
+                
+            }
+            else {
+                r = Red != null ? (byte)Red.Value : (byte)0;
+                g = Green != null ? (byte)Green.Value : (byte)0;
+                b = Blue != null ? (byte)Blue.Value : (byte)0;
+                Properties.Settings.Default.AccentColor = Color.FromArgb(255, r, g, b);
+                Properties.Settings.Default.AccentColorShade = ColorOperarions.ShadeColor(Properties.Settings.Default.AccentColor);
+                Properties.Settings.Default.Save();
+            }
         }
     }
 }

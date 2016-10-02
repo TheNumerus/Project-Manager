@@ -7,8 +7,8 @@
         xmlns:helper="clr-namespace:ProjectManager.Helpers"
         xmlns:Properties="clr-namespace:ProjectManager.Properties"
         mc:Ignorable="d"
-        Title="Project Manager" Height="650" Width="900" FontFamily="Roboto">
-    <Grid MouseDown="ResetFocus" Background="{DynamicResource BackgroundColor}">
+        Title="Project Manager" Height="650" Width="900" Style="{DynamicResource RobotoFont}" >
+    <Grid Background="{DynamicResource BackgroundColor}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition/>

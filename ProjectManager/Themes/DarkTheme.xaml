@@ -5,6 +5,10 @@
                     >
     <SolidColorBrush x:Key="AccentBackgroundBrush" Color="#FF131313"/>
     <SolidColorBrush x:Key="BackgroundColor" Color="#FF2B2B2B"/>
+
+    <Style x:Key="RobotoFont">
+        <Setter Property="TextElement.FontFamily" Value="Themes/#Roboto"/>
+    </Style>
     <ControlTemplate x:Key="ButtonTemplate" TargetType="Button">
         <Grid>
             <VisualStateManager.VisualStateGroups>

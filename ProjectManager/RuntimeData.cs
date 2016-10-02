@@ -239,7 +239,10 @@ namespace ProjectManager
         }
         public static void Undo() {
             step--;
-            runtimeData.list = undoData[step-1];
+            if (step != 0)
+            {
+                runtimeData.list = undoData[step - 1];
+            }
         }
         public static void ResetUndo() {
             undoData = new List<Data>() {runtimeData.list};
@@ -250,7 +253,10 @@ namespace ProjectManager
             if (step+1 < undoData.Count) {
                 step++;
             }
-            runtimeData.list = undoData[step];
+            if (step != 0)
+            {
+                runtimeData.list = undoData[step];
+            }
         }
 
     }

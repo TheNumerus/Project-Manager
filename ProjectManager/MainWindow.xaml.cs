@@ -278,10 +278,10 @@ namespace ProjectManager
                 Selection.ToggleSelecetion((Grid)sender);
                 if (!Selection.GetSelection((Grid)sender))
                 {
-                    ((Grid)sender).Background = new SolidColorBrush(Colors.White);
+                    ((Grid)sender).SetResourceReference(BackgroundProperty, "CardColor");
                 }
                 else {
-                    ((Grid)sender).SetResourceReference(BackgroundProperty, "AccentBackground");
+                    ((Grid)sender).SetResourceReference(BackgroundProperty, "AccentBackgroundBrush");
                 }
             }
         }
