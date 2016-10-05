@@ -91,5 +91,29 @@ namespace ProjectManager.Properties {
                 this["AccentColorShade"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFCC6600")]
+        public global::System.Windows.Media.Color ComplementCol {
+            get {
+                return ((global::System.Windows.Media.Color)(this["ComplementCol"]));
+            }
+            set {
+                this["ComplementCol"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FlipColor {
+            get {
+                return ((bool)(this["FlipColor"]));
+            }
+            set {
+                this["FlipColor"] = value;
+            }
+        }
     }
 }

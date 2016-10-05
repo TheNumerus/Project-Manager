@@ -27,6 +27,7 @@ namespace ProjectManager
             InitializeComponent();
             LoadOnStartCheckBox.IsChecked = Properties.Settings.Default.LoadOnStart;
             DarkThemeCheckBox.IsChecked = Properties.Settings.Default.DarkTheme;
+            FlipColorCheckBox.IsChecked = Properties.Settings.Default.FlipColor;
             Red.Value = Properties.Settings.Default.AccentColor.R;
             Green.Value = Properties.Settings.Default.AccentColor.G;
             Blue.Value = Properties.Settings.Default.AccentColor.B;
@@ -35,6 +36,19 @@ namespace ProjectManager
         private void LoadOnStart_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.LoadOnStart = (bool)((CheckBox)sender).IsChecked;
+            Properties.Settings.Default.Save();
+        }
+
+        private void FlipColorChange_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.FlipColor = (bool)((CheckBox)sender).IsChecked;
+            if (Properties.Settings.Default.FlipColor)
+            {
+                Properties.Settings.Default.ComplementCol = ColorOperarions.InvertHue(Color.FromArgb(255, r, g, b));
+            }
+            else {
+                Properties.Settings.Default.ComplementCol = Properties.Settings.Default.AccentColor;
+            }
             Properties.Settings.Default.Save();
         }
 
@@ -71,7 +85,14 @@ namespace ProjectManager
             }
             Properties.Settings.Default.AccentColor = Color.FromArgb(a, r, g, b);
             Properties.Settings.Default.AccentColorShade = ColorOperarions.ShadeColor(Color.FromArgb(a, r, g, b));
-            Properties.Settings.Default.Save();
+            if (Properties.Settings.Default.FlipColor)
+            {
+                Properties.Settings.Default.ComplementCol = ColorOperarions.InvertHue(Color.FromArgb(a, r, g, b));
+            }
+            else {
+                Properties.Settings.Default.ComplementCol = Properties.Settings.Default.AccentColor;
+            }
+    Properties.Settings.Default.Save();
         }
 
         private void UpdateColorValue(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -89,6 +110,13 @@ namespace ProjectManager
                 b = Blue != null ? (byte)Blue.Value : (byte)0;
                 Properties.Settings.Default.AccentColor = Color.FromArgb(255, r, g, b);
                 Properties.Settings.Default.AccentColorShade = ColorOperarions.ShadeColor(Properties.Settings.Default.AccentColor);
+                if (Properties.Settings.Default.FlipColor)
+                {
+                    Properties.Settings.Default.ComplementCol = ColorOperarions.InvertHue(Color.FromArgb(255, r, g, b));
+                }
+                else {
+                    Properties.Settings.Default.ComplementCol = Properties.Settings.Default.AccentColor;
+                }
                 Properties.Settings.Default.Save();
             }
         }

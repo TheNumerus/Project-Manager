@@ -6,8 +6,7 @@
         xmlns:local="clr-namespace:ProjectManager"
         xmlns:Properties="clr-namespace:ProjectManager.Properties"
         mc:Ignorable="d"
-        Title="Settings" Height="220
-        " Width="300" ResizeMode="NoResize" Style="{DynamicResource RobotoFont}">
+        Title="Settings" Height="250" Width="300" ResizeMode="NoResize" Style="{DynamicResource RobotoFont}">
     <Grid Background="{DynamicResource BackgroundColor}">
 
         <StackPanel Margin="10">
@@ -21,6 +20,7 @@
             <Slider x:Name="Red" Maximum="255" LargeChange="5" SmallChange="1" Margin="5,3" Value="{Binding Mode=OneTime, Source={x:Static Properties:Settings.Default}, Path=AccentColor.R, FallbackValue=0}" ValueChanged="UpdateColorValue" />
             <Slider x:Name="Green" Maximum="255" LargeChange="5" SmallChange="1" Margin="5,3" Value="{Binding Mode=OneTime, Source={x:Static Properties:Settings.Default}, Path=AccentColor.G, FallbackValue=0}" ValueChanged="UpdateColorValue" />
             <Slider x:Name="Blue" Maximum="255" LargeChange="5" SmallChange="1" Margin="5,3" Value="{Binding Mode=OneTime, Source={x:Static Properties:Settings.Default}, Path=AccentColor.B, FallbackValue=0}" ValueChanged="UpdateColorValue" />
+            <CheckBox x:Name="FlipColorCheckBox" Content="Flip complementary color" HorizontalAlignment="Left" Margin="10,5,0,5" VerticalAlignment="Center" Click="FlipColorChange_Click" Foreground="{DynamicResource DescriptionColor}"/>
         </StackPanel>
     </Grid>
 </Window>

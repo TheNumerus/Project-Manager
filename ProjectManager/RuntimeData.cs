@@ -131,7 +131,7 @@ namespace ProjectManager
                         PlaceToSave = FindDataParent(runtimeDataNew, FindDataByHierarchy(runtimeDataNew, CardHierarchy.GetCardLevel((Grid)List.Children[i])));
                     }
                     //if card above has same hierarchy level, we save it in same location
-                    Data DataToAdd = new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)card.Children[3]), CardHierarchy.GetCardLevel(card), newID: card.GetHashCode());
+                    Data DataToAdd = new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)card.Children[2]), CardHierarchy.GetCardLevel(card), newID: card.GetHashCode());
                     PlaceToSave.cards.Add(DataToAdd);
                     //if there was a data object with description, we add that description back
                     if (FindByID(card.GetHashCode(), runtimeData.list) != null)

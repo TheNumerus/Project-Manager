@@ -73,11 +73,10 @@ namespace ProjectManager
             newCard = (Grid)XamlReader.Load(xmlReader);
             //adding event handlers
             ((Button)newCard.Children[1]).Click += DeleteCard;
-            ((Button)newCard.Children[2]).Click += AddNewCard;
-            ((Button)newCard.Children[4]).Click += MoveLeftButton_Click;
-            ((Button)newCard.Children[5]).Click += MoveRightButton_Click;
-            ((Button)newCard.Children[6]).Click += MoveCardUp;
-            ((Button)newCard.Children[7]).Click += MoveCardDown;
+            ((Button)newCard.Children[3]).Click += MoveLeftButton_Click;
+            ((Button)newCard.Children[4]).Click += MoveRightButton_Click;
+            ((Button)newCard.Children[5]).Click += MoveCardUp;
+            ((Button)newCard.Children[6]).Click += MoveCardDown;
             //add event to open detail window
             newCard.MouseDown += ClickCardEvent;
             //main card is invisible, so we must set new card to be visible
@@ -272,17 +271,30 @@ namespace ProjectManager
         //open details window
         private void ClickCardEvent(object sender, MouseButtonEventArgs e)
         {
-            AddCardInfo((Grid)sender);
+            Grid card = (Grid)sender;
+            
             //handling shift click to select card
-            if (Keyboard.IsKeyDown(Key.LeftShift)) {
-                Selection.ToggleSelecetion((Grid)sender);
-                if (!Selection.GetSelection((Grid)sender))
+            if (Keyboard.IsKeyDown(Key.LeftShift))
+            {
+                Selection.ToggleSelecetion(card);
+                if (!Selection.GetSelection(card))
                 {
                     ((Grid)sender).SetResourceReference(BackgroundProperty, "CardColor");
                 }
-                else {
-                    ((Grid)sender).SetResourceReference(BackgroundProperty, "AccentBackgroundBrush");
+                else
+                {
+                    ((Grid)sender).SetResourceReference(BackgroundProperty, "ComplementColor");
                 }
+            }
+            else {
+                //reset coloration
+                foreach (Grid c in Seznam.Children)
+                {
+                    c.SetResourceReference(BackgroundProperty, "CardColor");
+                    Selection.SetSelecetion(c, false);
+                }
+                card.SetResourceReference(BackgroundProperty, "AccentBackgroundBrush");
+                AddCardInfo(card);
             }
         }
         //move card up and down
@@ -329,9 +341,9 @@ namespace ProjectManager
                 DeleteAllCards();
                 if (!RuntimeData.Load())
                 {
-                    Grid novaKarta = new Grid();
-                    CreateCard(out novaKarta);
-                    Seznam.Children.Add(novaKarta);
+                    Grid newCard = new Grid();
+                    CreateCard(out newCard);
+                    Seznam.Children.Add(newCard);
                 }
                 else
                 {
@@ -416,6 +428,7 @@ namespace ProjectManager
         {
             ((UIElement)sender).Focus();
             foreach (Grid card in Seznam.Children) {
+                card.SetResourceReference(BackgroundProperty, "CardColor");
                 Selection.SetSelecetion((UIElement)sender, false);
             }
         }
@@ -433,6 +446,19 @@ namespace ProjectManager
             RuntimeData.Redo();
             DeleteAllCards();
             GenerateFromData(RuntimeData.runtimeData.list);
+        }
+
+        private void AddButtonClicked(object sender, MouseButtonEventArgs e)
+        {
+            Grid card = new Grid();
+            CreateCard(out card);
+            Seznam.Children.Add(card);
+            RuntimeData.Generate(Seznam, ProjectName);
+            //here we assign new date to card data
+            Data data = RuntimeData.FindByID(card.GetHashCode(), RuntimeData.runtimeData.list);
+            data.changeDate = DateTime.Now;
+            //focus new card
+            AddCardInfo((Grid)Seznam.Children[Seznam.Children.Count-1]);
         }
     }
 }

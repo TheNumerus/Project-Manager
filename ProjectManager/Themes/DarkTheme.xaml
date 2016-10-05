@@ -5,6 +5,7 @@
                     >
     <SolidColorBrush x:Key="AccentBackgroundBrush" Color="#FF131313"/>
     <SolidColorBrush x:Key="BackgroundColor" Color="#FF2B2B2B"/>
+    <SolidColorBrush x:Key="ComplementColor" Color="#FF131313"/>
 
     <Style x:Key="RobotoFont">
         <Setter Property="TextElement.FontFamily" Value="/Themes/#Roboto"/>

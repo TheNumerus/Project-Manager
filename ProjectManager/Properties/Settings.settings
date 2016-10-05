@@ -20,5 +20,11 @@
     <Setting Name="AccentColorShade" Type="System.Windows.Media.Color" Scope="User">
       <Value Profile="(Default)">#FF99CCFF</Value>
     </Setting>
+    <Setting Name="ComplementCol" Type="System.Windows.Media.Color" Scope="User">
+      <Value Profile="(Default)">#FFCC6600</Value>
+    </Setting>
+    <Setting Name="FlipColor" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
