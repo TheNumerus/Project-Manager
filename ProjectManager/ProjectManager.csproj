@@ -139,6 +139,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <Resource Include="Themes\Roboto-Medium.ttf" />
     <Resource Include="Themes\ROBOTO-REGULAR.TTF" />
   </ItemGroup>
   <ItemGroup>

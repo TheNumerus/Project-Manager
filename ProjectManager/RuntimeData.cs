@@ -105,33 +105,33 @@ namespace ProjectManager
             for (int i = 0; i < List.Children.Count; i++)
             {
                 //this code doesn't work with only one card, so we handle it there
-                Grid cardAbove = new Grid();
+                Border cardAbove = new Border();
                 if (i != 0)
                 {
-                    cardAbove = (Grid)List.Children[i - 1];
+                    cardAbove = (Border)List.Children[i - 1];
                 }
                 //there start code for generating data structure
                 else
                 {
                     CardHierarchy.SetCardLevel(cardAbove, 1);
                 }
-                Grid card = (Grid)List.Children[i];
-                TextBox cardName = (TextBox)card.Children[0];
+                Border card = (Border)List.Children[i];
+                TextBox cardName = (TextBox)((Grid)card.Child).Children[0];
                 if (card.Visibility != Visibility.Collapsed)
                 {
                     //if card above has bigger hierarchy level, we save that data there
-                    if (CardHierarchy.GetCardLevel((Grid)List.Children[i - 1]) < CardHierarchy.GetCardLevel((Grid)List.Children[i]))
+                    if (CardHierarchy.GetCardLevel(cardAbove) < CardHierarchy.GetCardLevel(card))
                     {
                         PlaceToSave = PlaceToSave.cards[PlaceToSave.cards.Count - 1];
                     }
                     //if card above has lower hierarchy level, we save that card into parent of card, with the same hierarchy
-                    else if (CardHierarchy.GetCardLevel((Grid)List.Children[i - 1]) > CardHierarchy.GetCardLevel((Grid)List.Children[i]))
+                    else if (CardHierarchy.GetCardLevel(cardAbove) > CardHierarchy.GetCardLevel(card))
                     {
                         //but for that, we need to search all lists to find a parent
-                        PlaceToSave = FindDataParent(runtimeDataNew, FindDataByHierarchy(runtimeDataNew, CardHierarchy.GetCardLevel((Grid)List.Children[i])));
+                        PlaceToSave = FindDataParent(runtimeDataNew, FindDataByHierarchy(runtimeDataNew, CardHierarchy.GetCardLevel(card)));
                     }
                     //if card above has same hierarchy level, we save it in same location
-                    Data DataToAdd = new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)card.Children[2]), CardHierarchy.GetCardLevel(card), newID: card.GetHashCode());
+                    Data DataToAdd = new Data(cardName.Text, LabelColorNumbers.GetColorNumber((Rectangle)((Grid)card.Child).Children[2]), CardHierarchy.GetCardLevel(card), newID: card.GetHashCode());
                     PlaceToSave.cards.Add(DataToAdd);
                     //if there was a data object with description, we add that description back
                     if (FindByID(card.GetHashCode(), runtimeData.list) != null)

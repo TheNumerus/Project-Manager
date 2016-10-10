@@ -18,6 +18,8 @@ using System.Xml.Serialization;
 using System.Xml;
 using ProjectManager.Helpers;
 using Microsoft.Win32;
+using System.Text.RegularExpressions;
+using System.Net;
 
 namespace ProjectManager
 {
@@ -26,10 +28,14 @@ namespace ProjectManager
     /// </summary>
     public partial class MainWindow : Window
     {
+        //variable for drag and drop
+        Point lastClick;
+        Border lastClickedCard;
+
         public MainWindow()
         {
             InitializeComponent();
-            Grid newCard = new Grid();
+            Border newCard = new Border();
             CreateCard(out newCard);
             Seznam.Children.Add(newCard);
             //main card is invisible, so user can't change it
@@ -39,18 +45,18 @@ namespace ProjectManager
                 DeleteAllCards();
                 if (!RuntimeData.Load())
                 {
-                    newCard = new Grid();
+                    newCard = new Border();
                     CreateCard(out newCard);
                     Seznam.Children.Add(newCard);
                     RuntimeData.Generate(Seznam,ProjectName);
-                    AddCardInfo((Grid)Seznam.Children[1]);
+                    AddCardInfo((Border)Seznam.Children[1]);
                 }
                 else
                 {
                     GenerateFromData(RuntimeData.runtimeData.list);
                     ProjectName.Text = RuntimeData.runtimeData.list.name;
                     //autofocus first card
-                    AddCardInfo((Grid)Seznam.Children[1]);
+                    AddCardInfo((Border)Seznam.Children[1]);
                 }
             }
             SetWindowName();
@@ -64,23 +70,25 @@ namespace ProjectManager
             this.Title = label;
         }
         //Methods for simplifiyng event handlers
-        public void CreateCard(out Grid newCard)
+        public void CreateCard(out Border cardContainer)
         {
             //parsing to string and generating new card
             var xaml = XamlWriter.Save(ZakladniKarta);
             StringReader stringReader = new StringReader(xaml);
             XmlReader xmlReader = XmlReader.Create(stringReader);
-            newCard = (Grid)XamlReader.Load(xmlReader);
+            cardContainer = (Border)XamlReader.Load(xmlReader);
+            Grid card = (Grid)cardContainer.Child;
             //adding event handlers
-            ((Button)newCard.Children[1]).Click += DeleteCard;
-            ((Button)newCard.Children[3]).Click += MoveLeftButton_Click;
-            ((Button)newCard.Children[4]).Click += MoveRightButton_Click;
-            ((Button)newCard.Children[5]).Click += MoveCardUp;
-            ((Button)newCard.Children[6]).Click += MoveCardDown;
-            //add event to open detail window
-            newCard.MouseDown += ClickCardEvent;
+            ((Button)card.Children[1]).Click += DeleteCard;
+            ((Button)card.Children[3]).Click += MoveLeftButton_Click;
+            ((Button)card.Children[4]).Click += MoveRightButton_Click;
+            ((Button)card.Children[5]).Click += MoveCardUp_Event;
+            ((Button)card.Children[6]).Click += MoveCardDown_Event;
+            //add event to open detail window and drag n drop
+            cardContainer.PreviewMouseLeftButtonDown += ClickCardEvent;
+            cardContainer.PreviewMouseLeftButtonUp += CardLMBUp_Event;
             //main card is invisible, so we must set new card to be visible
-            newCard.Visibility = Visibility.Visible;
+            cardContainer.Visibility = Visibility.Visible;
         }
         //deletes all cards
         public void DeleteAllCards() {
@@ -106,11 +114,12 @@ namespace ProjectManager
             }
         }
         public void AddToList(Data data) {
-            Grid newCard = new Grid();
-            CreateCard(out newCard);
+            Border cardContainer = new Border();
+            CreateCard(out cardContainer);
+            Grid newCard = (Grid)cardContainer.Child;
             ((TextBox)newCard.Children[0]).Text = data.name;
             //set label color
-            Rectangle LabelNew = (Rectangle)(newCard.Children[3]);
+            Rectangle LabelNew = (Rectangle)(newCard.Children[2]);
             LabelColorNumbers.SetColorNumber(LabelNew, data.labelColor);
             CardHierarchy.SetCardLevel(newCard, data.level);
             LabelNew.Fill = new SolidColorBrush(LabelColorValues.barva[(int)data.labelColor]);
@@ -119,26 +128,26 @@ namespace ProjectManager
             marginNew.Left = (CardHierarchy.GetCardLevel(newCard) - 1) * 20 + 5;
             newCard.Margin = marginNew;
             //add card to list
-            Seznam.Children.Add(newCard);
+            Seznam.Children.Add(cardContainer);
             //add hash of the created grid to data, so they bind together
-            data.GridID = newCard.GetHashCode();
+            data.GridID = cardContainer.GetHashCode();
 
         }
         //methods for moving cards in hierarchy
-        public void MoveCardLeft(Grid card,int steps = 1) {
+        public void MoveCardLeft(Border card,int steps = 1) {
             for (int i = 0; i < steps; i++)
             {
                 Thickness oldMargin = card.Margin;
                 if (CardHierarchy.GetCardLevel(card) > 1)
                 {
                     CardHierarchy.SetCardLevel(card, CardHierarchy.GetCardLevel(card) - 1);
-                    oldMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20 + 5;
+                    oldMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20;
                 }
                 card.Margin = oldMargin;
             }
             RuntimeData.Generate(Seznam, ProjectName);
         }
-        public void MoveCardRight(Grid card,Grid cardAbove, int steps = 1)
+        public void MoveCardRight(Border card,Border cardAbove, int steps = 1)
         {
             for (int i = 0; i < steps; i++)
             {
@@ -149,7 +158,7 @@ namespace ProjectManager
                 if (CardHierarchy.GetCardLevel(card) < 4 &&  parent.cards.IndexOf(data) >= 1)
                 {
                     CardHierarchy.SetCardLevel(card, CardHierarchy.GetCardLevel(card) + 1);
-                    oldMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20 + 5;
+                    oldMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20;
                 }
                 card.Margin = oldMargin;
             }
@@ -158,8 +167,8 @@ namespace ProjectManager
         //method for moving all cards in hierarchy
         public void SortAllCards(StackPanel sp) {
             for(int i = 1;i<sp.Children.Count;i++) {
-                Grid card = (Grid)sp.Children[i];
-                Grid cardAbove = (Grid)sp.Children[i-1];
+                Border card = (Border)sp.Children[i];
+                Border cardAbove = (Border)sp.Children[i-1];
 
                 //set first card allways to first place
                 if (i == 1)
@@ -178,7 +187,7 @@ namespace ProjectManager
             DeleteAllCards();
             if (!RuntimeData.Load())
             {
-                Grid newCard = new Grid();
+                Border newCard = new Border();
                 CreateCard(out newCard);
                 Seznam.Children.Add(newCard);
             }
@@ -193,21 +202,6 @@ namespace ProjectManager
         {
             //RuntimeData.Generate(Seznam,ProjectName);
             RuntimeData.Save();
-        }
-
-        private void AddNewCard(object sender, RoutedEventArgs e)
-        {
-            Grid card = new Grid();
-            CreateCard(out card);
-            //get card number which sent the event, so we can add new card just under it
-            int cardIndex = Seznam.Children.IndexOf((Grid)((Button)sender).Parent);
-            Seznam.Children.Insert(cardIndex + 1, card);
-            RuntimeData.Generate(Seznam, ProjectName);
-            //here we assign new date to card data
-            Data data = RuntimeData.FindByID(card.GetHashCode(), RuntimeData.runtimeData.list);
-            data.changeDate = DateTime.Now;
-            //focus new card
-            AddCardInfo((Grid)Seznam.Children[cardIndex + 1]);
         }
 
         private void DeleteCard(object sender, RoutedEventArgs e)
@@ -227,13 +221,13 @@ namespace ProjectManager
             }
             //delete self
             if (cardsDeleted == 0) {
-                Seznam.Children.Remove((Grid)((Button)sender).Parent);
+                Seznam.Children.Remove((Border)((Grid)((Button)sender).Parent).Parent);
             }
             RuntimeData.Generate(Seznam,ProjectName);
             //avoid empty list
             if (Seznam.Children.Count == 1)
             {
-                Grid newCard = new Grid();
+                Border newCard = new Border();
                 CreateCard(out newCard);
                 Seznam.Children.Add(newCard);
                 RuntimeData.Generate(Seznam, ProjectName);
@@ -243,17 +237,17 @@ namespace ProjectManager
         private void MoveLeftButton_Click(object sender, RoutedEventArgs e)
         {
             Button btn = (Button)sender;
-            int index = Seznam.Children.IndexOf((UIElement)btn.Parent);
-            Grid card = (Grid)Seznam.Children[index];
+            int index = Seznam.Children.IndexOf((Border)((Grid)btn.Parent).Parent);
+            Border card = (Border)Seznam.Children[index];
             MoveCardLeft(card);
             SortAllCards(Seznam);
         }
         private void MoveRightButton_Click(object sender, RoutedEventArgs e)
         {
             Button btn = (Button)sender;
-            int index = Seznam.Children.IndexOf((UIElement)btn.Parent);
-            Grid card = (Grid)Seznam.Children[index];
-            Grid cardAbove = (Grid)Seznam.Children[index-1];
+            int index = Seznam.Children.IndexOf((Border)((Grid)btn.Parent).Parent);
+            Border card = (Border)Seznam.Children[index];
+            Border cardAbove = (Border)Seznam.Children[index-1];
             MoveCardRight(card, cardAbove);
             SortAllCards(Seznam);
         }
@@ -271,56 +265,61 @@ namespace ProjectManager
         //open details window
         private void ClickCardEvent(object sender, MouseButtonEventArgs e)
         {
-            Grid card = (Grid)sender;
-            
+            Border card = (Border)sender;
+            lastClick = e.GetPosition(Seznam);
+            lastClickedCard = card;
             //handling shift click to select card
             if (Keyboard.IsKeyDown(Key.LeftShift))
             {
                 Selection.ToggleSelecetion(card);
                 if (!Selection.GetSelection(card))
                 {
-                    ((Grid)sender).SetResourceReference(BackgroundProperty, "CardColor");
+                    ((Border)sender).SetResourceReference(BackgroundProperty, "CardColor");
                 }
                 else
                 {
-                    ((Grid)sender).SetResourceReference(BackgroundProperty, "ComplementColor");
+                    ((Border)sender).SetResourceReference(BackgroundProperty, "ComplementColor");
                 }
             }
             else {
                 //reset coloration
-                foreach (Grid c in Seznam.Children)
+                foreach (Border b in Seznam.Children)
                 {
-                    c.SetResourceReference(BackgroundProperty, "CardColor");
-                    Selection.SetSelecetion(c, false);
+                    b.SetResourceReference(BackgroundProperty, "CardColor");
+                    Selection.SetSelecetion(b, false);
                 }
                 card.SetResourceReference(BackgroundProperty, "AccentBackgroundBrush");
                 AddCardInfo(card);
             }
         }
         //move card up and down
-        private void MoveCardDown(object sender, RoutedEventArgs e)
+        private void MoveCardDown_Event(object sender, RoutedEventArgs e)
         {
-            Button btn = (Button)sender;
-            int index = Seznam.Children.IndexOf((UIElement)btn.Parent);
-            Grid card = (Grid)Seznam.Children[index];
+            Border card = (Border)((Grid)((Button)sender).Parent).Parent;
+            MoveCardDown(card);
+        }
+        public void MoveCardDown(Border card) {
+            int index = Seznam.Children.IndexOf(card);
             Seznam.Children.RemoveAt(index);
             //handle last card
             if (index != Seznam.Children.Count)
             {
                 Seznam.Children.Insert(index + 1, card);
             }
-            else {
+            else
+            {
                 Seznam.Children.Insert(index, card);
             }
             SortAllCards(Seznam);
             RuntimeData.Generate(Seznam, ProjectName);
         }
-
-        private void MoveCardUp(object sender, RoutedEventArgs e)
+        private void MoveCardUp_Event(object sender, RoutedEventArgs e)
         {
-            Button btn = (Button)sender;
-            int index = Seznam.Children.IndexOf((UIElement)btn.Parent);
-            Grid card = (Grid)Seznam.Children[index];
+            Border card = (Border)((Grid)((Button)sender).Parent).Parent;
+            MoveCardUp(card);
+        }
+        public void MoveCardUp(Border card) {
+            int index = Seznam.Children.IndexOf(card);
             //handle first card
             if (index != 1)
             {
@@ -341,7 +340,7 @@ namespace ProjectManager
                 DeleteAllCards();
                 if (!RuntimeData.Load())
                 {
-                    Grid newCard = new Grid();
+                    Border newCard = new Border();
                     CreateCard(out newCard);
                     Seznam.Children.Add(newCard);
                 }
@@ -372,17 +371,18 @@ namespace ProjectManager
         //events for details subwindow
 
         //reference to card
-        public Grid Card;
+        public Border CardContainer;
         public Data attachedData;
         //Here we add content info from card
-        public void AddCardInfo(Grid SourceCard)
+        public void AddCardInfo(Border srcBorder)
         {
-            Card = SourceCard;
-            attachedData = RuntimeData.FindByID(Card.GetHashCode(), RuntimeData.runtimeData.list);
+            CardContainer = srcBorder;
+            Grid Card = (Grid)CardContainer.Child;
+            attachedData = RuntimeData.FindByID(CardContainer.GetHashCode(), RuntimeData.runtimeData.list);
             nameBox.Text = ((TextBox)(Card.Children[0])).Text;
             //descBox.Text = ((TextBox)(Card.Children[0])).Text;
-            LabelRect.Fill = new SolidColorBrush(LabelColorValues.barva[(int)LabelColorNumbers.GetColorNumber(Card.Children[3])]);
-            LabelColorNumbers.SetColorNumber(LabelRect, LabelColorNumbers.GetColorNumber(Card.Children[3]));
+            LabelRect.Fill = new SolidColorBrush(LabelColorValues.barva[(int)LabelColorNumbers.GetColorNumber(Card.Children[2])]);
+            LabelColorNumbers.SetColorNumber(LabelRect, LabelColorNumbers.GetColorNumber(Card.Children[2]));
             //handling empty reference
             if (attachedData != null)
             {
@@ -402,35 +402,62 @@ namespace ProjectManager
         private void NameChanged_Event(object sender, TextChangedEventArgs e)
         {
             //ensure the card is set
-            if (Card != null)
+            if (CardContainer != null)
             {
+                Grid Card = (Grid)CardContainer.Child;
                 ((TextBox)(Card.Children[0])).Text = nameBox.Text;
             }
         }
         //set new label color in window and update card label
         private void LabelChange_Event(object sender, MouseButtonEventArgs e)
         {
+            Grid Card = (Grid)CardContainer.Child;
             LabelColorNumbers.LabelColorChange(LabelRect, 1);
-            LabelColorNumbers.LabelColorChange((Rectangle)(Card.Children[3]), 1);
+            LabelColorNumbers.LabelColorChange((Rectangle)(Card.Children[2]), 1);
             attachedData.labelColor = LabelColorNumbers.GetColorNumber(LabelRect);
         }
 
         private void DescChanged_Event(object sender, TextChangedEventArgs e)
         {
             //ensure the card is set
-            if (Card != null && descBox.Text != null)
+            if (CardContainer != null && descBox.Text != null)
             {
+                Grid Card = (Grid)CardContainer.Child;
                 attachedData.description = descBox.Text;
+                //parse url
+                string text = descBox.Text;
+                Match url = Regex.Match(text, @"((http:[/]{2})|(https:[/]{2})).+((\.jpg)|(\.png))");
+                string result = url.Value;
+                Match filename = Regex.Match(result, @"(([^/]+)((\.jpg)|(\.png)))$");
+                if (url.Success)
+                {
+                    if (!Directory.Exists(System.AppDomain.CurrentDomain.BaseDirectory + "/DownloadedImages"))
+                    {
+                        Directory.CreateDirectory(System.AppDomain.CurrentDomain.BaseDirectory + "/DownloadedImages");
+                    }
+                    if (!File.Exists("DownloadedImages/"+filename.Value))
+                    {
+                        using (WebClient wc = new WebClient())
+                        {
+                            wc.DownloadFile(new Uri(result),filename.Value);
+                            File.Move(filename.Value, "DownloadedImages/" + filename.Value);
+                        }
+                    }
+                    TestImage.Source = new BitmapImage(new Uri(System.AppDomain.CurrentDomain.BaseDirectory + "/DownloadedImages/" + filename.Value));
+                }
+                else {
+                    TestImage.Source = null;
+                }
             }
         }
         //resets focuses and selection
         private void ResetFocus(object sender, MouseButtonEventArgs e)
         {
-            ((UIElement)sender).Focus();
-            foreach (Grid card in Seznam.Children) {
-                card.SetResourceReference(BackgroundProperty, "CardColor");
+            foreach (Border brd in Seznam.Children) {
+                brd.SetResourceReference(BackgroundProperty, "CardColor");
                 Selection.SetSelecetion((UIElement)sender, false);
             }
+            //lastClickedCard = null;
         }
 
         private void UndoButton_Click(object sender, RoutedEventArgs e)
@@ -450,7 +477,7 @@ namespace ProjectManager
 
         private void AddButtonClicked(object sender, MouseButtonEventArgs e)
         {
-            Grid card = new Grid();
+            Border card = new Border();
             CreateCard(out card);
             Seznam.Children.Add(card);
             RuntimeData.Generate(Seznam, ProjectName);
@@ -458,7 +485,29 @@ namespace ProjectManager
             Data data = RuntimeData.FindByID(card.GetHashCode(), RuntimeData.runtimeData.list);
             data.changeDate = DateTime.Now;
             //focus new card
-            AddCardInfo((Grid)Seznam.Children[Seznam.Children.Count-1]);
+            AddCardInfo((Border)Seznam.Children[Seznam.Children.Count-1]);
+        }
+
+        private void CardLMBUp_Event(object sender, MouseButtonEventArgs e)
+        {
+            Vector change = Point.Subtract(lastClick, e.GetPosition(Seznam));
+            if (change.Length > 10)
+            {
+                //MessageBox.Show(change.ToString());
+                if (change.Y > 50) {
+                    MoveCardUp(lastClickedCard);
+                }
+                if (change.Y < -50)
+                {
+                    MoveCardDown(lastClickedCard);
+                }
+            }
+        }
+
+        private void SettingsButton_Click(object sender, MouseButtonEventArgs e)
+        {
+            SettingsWindow sw = new SettingsWindow();
+            sw.Show();
         }
     }
 }

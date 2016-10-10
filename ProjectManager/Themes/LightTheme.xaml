@@ -4,10 +4,11 @@
                     xmlns:prop="clr-namespace:ProjectManager.Properties"
                     >
     <SolidColorBrush x:Key="BackgroundColor" Color="White"/>
-    <SolidColorBrush x:Key="CardColor" Color="{Binding Source={x:Static prop:Settings.Default} , Path=AccentColorShade}"/>
+    <SolidColorBrush x:Key="CardColor" Color="White"/>
     <SolidColorBrush x:Key="AccentBackgroundBrush" Color="{Binding Source={x:Static prop:Settings.Default} , Path=AccentColor}"/>
     <SolidColorBrush x:Key="ComplementColor" Color="{Binding Source={x:Static prop:Settings.Default} , Path=ComplementCol}"/>
     <SolidColorBrush x:Key="DescriptionColor" Color="Black"/>
+    <SolidColorBrush x:Key="AccentTextColor" Color="White"/>
     <Style x:Key="RobotoFont">
         <Setter Property="TextElement.FontFamily" Value="/Themes/#Roboto"/>
     </Style>
@@ -19,36 +20,35 @@
                     <VisualState x:Name="Normal"/>
                     <VisualState x:Name="MouseOver">
                         <Storyboard>
-                            <ColorAnimation Duration="0:0:0.3" Storyboard.TargetName="BackgroundFill" Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" To="White"/>
+                            <ColorAnimation Duration="0:0:0.2" Storyboard.TargetName="BackgroundFill" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="{Binding Source={x:Static prop:Settings.Default} , Path=AccentColorShade}"/>
                         </Storyboard>
                     </VisualState>
                     <VisualState x:Name="Pressed">
                         <Storyboard>
-                            <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundFill" Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" To="White"/>
+                            <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundFill" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="White"/>
                         </Storyboard>
                     </VisualState>
                     <VisualState x:Name="Disabled">
                         <Storyboard>
-                            <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundFill" Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" To="White"/>
+                            <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundFill" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="White"/>
                         </Storyboard>
                     </VisualState>
                 </VisualStateGroup>
                 <VisualStateGroup x:Name="FocusStates">
                     <VisualState x:Name="Focused">
                         <Storyboard>
-                            <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundFill" Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" To="White"/>
+                            <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundFill" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="White"/>
                         </Storyboard>
                     </VisualState>
                     <VisualState x:Name="Unfocused" />
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
             <Grid Background="{TemplateBinding Background}">
-                <Rectangle x:Name="BackgroundFill">
-                    <Rectangle.Fill>
-                        <SolidColorBrush Color="{Binding Mode=OneWay, Source={x:Static prop:Settings.Default} , Path=AccentColorShade}"/>
-                    </Rectangle.Fill>
-                </Rectangle>
-
+                <Border  x:Name="BackgroundFill" CornerRadius="2">
+                    <Border.Background>
+                        <SolidColorBrush Color="{Binding Source={x:Static prop:Settings.Default} , Path=AccentColor}"/>
+                    </Border.Background>
+                </Border>
             </Grid>
             <ContentPresenter
                               x:Name="contentPresenter"
@@ -110,10 +110,11 @@
     <Style x:Key="ButtonMain" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="{StaticResource BackgroundColor}"/>
         <Setter Property="Foreground" Value="Black"/>
-        <Setter Property="Padding" Value="6,3"/>
+        <Setter Property="Padding" Value="8,3"/>
         <Setter Property="FontWeight" Value="500"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Template" Value="{StaticResource ButtonTemplate}"/>
+        <Setter Property="FontFamily" Value="/Themes/#Roboto Medium"/>
     </Style>
 
     <Style x:Key="ButtonSmall" TargetType="{x:Type Button}">
