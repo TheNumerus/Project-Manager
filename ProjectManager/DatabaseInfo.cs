@@ -17,10 +17,12 @@ namespace ProjectManager
             name = newName;
             versionApp = Properties.Settings.Default.VersionNumber;
             versionDB = "1";
+            list = new Data();
         }
         public DatabaseInfo() {
             versionApp = Properties.Settings.Default.VersionNumber;
             versionDB = "1";
+            list = new Data();
         }
     }
 }

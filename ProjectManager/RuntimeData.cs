@@ -15,7 +15,7 @@ namespace ProjectManager
     public static class RuntimeData
     {
         //variable for loading data at runtime
-        public static DatabaseInfo runtimeData;
+        public static DatabaseInfo runtimeData = new DatabaseInfo();
         //variable for undo and redo
         public static List<Data> undoData = new List<Data>();
         public static int step = -1;
