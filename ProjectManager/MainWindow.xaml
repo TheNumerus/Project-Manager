@@ -32,11 +32,11 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="350"/>
                 <ColumnDefinition Width="3"/>
-                <ColumnDefinition/>
+                <ColumnDefinition MinWidth="350"/>
             </Grid.ColumnDefinitions>
             <ScrollViewer  Focusable="False" Grid.Column="0" Style="{DynamicResource ScrollviewStyle}" PreviewMouseLeftButtonUp="ResetFocus">
                 <StackPanel x:Name="Seznam" Margin="0">
-                    <Border Height="40" x:Name="ZakladniKarta" helper:CardHierarchy.CardLevel="1" Background="{DynamicResource CardColor}" helper:Selection.Selecetion ="False" MouseLeftButtonDown="ClickCardEvent" MouseLeftButtonUp="CardLMBUp_Event" Margin="5">
+                    <Border Height="40" x:Name="ZakladniKarta" helper:CardHierarchy.CardLevel="1" Background="{DynamicResource CardColor}" helper:Selection.Selecetion ="False" MouseLeftButtonDown="ClickCardEvent" MouseLeftButtonUp="CardLMBUp_Event" Margin="5" CornerRadius="2">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="10" Direction="270" Opacity="0.4" ShadowDepth="3"/>
                         </Border.Effect>
@@ -65,7 +65,7 @@
             <TextBox x:Name="nameBox" Grid.Column="2" Text="CardName" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="16" BorderBrush="{x:Null}" TextChanged="NameChanged_Event" SelectionBrush="{x:Null}" BorderThickness="0,0,0,1" Background="{x:Null}" Foreground="{DynamicResource DescriptionColor}"/>
             <TextBox x:Name="descBox" Grid.Column="2" Margin="10,38,10,0" TextWrapping="Wrap" Text="Description" VerticalAlignment="Top" BorderBrush="{x:Null}" TextChanged="DescChanged_Event" SelectionBrush="{x:Null}" BorderThickness="0,0,0,1" MinLines="3" Background="{x:Null}" Foreground="{DynamicResource DescriptionColor}"/>
             <Rectangle x:Name="LabelRect" Grid.Column="2" Fill="#00000000" Margin="10,0,10,10" Stroke="#33000000" Height="12" VerticalAlignment="Bottom" helper:LabelColorNumbers.ColorNumber="None" MouseDown="LabelChange_Event"/>
-            <Image x:Name="TestImage" Grid.Column="2" Margin="0,0,10,30" MaxWidth="500" MaxHeight="350" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+            <Image x:Name="descImage" Grid.Column="2" Margin="0,0,10,30" MaxWidth="500" MaxHeight="350" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
             <TextBlock x:Name="dateBlock" Grid.Column="2" Text="Date" Margin="0,0,10,28" FontSize="16" HorizontalAlignment="Right" Foreground="#FFAAAAAA" Height="21" VerticalAlignment="Bottom"/>
             <Grid Width="60" Height="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,10">
                 <Canvas HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50">

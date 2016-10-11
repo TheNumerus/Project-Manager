@@ -18,7 +18,7 @@ namespace ProjectManager
         public static DatabaseInfo runtimeData;
         //variable for undo and redo
         public static List<Data> undoData = new List<Data>();
-        public static int step = 0;
+        public static int step = -1;
 
         //load data to variable
         public static bool Load()
@@ -235,29 +235,33 @@ namespace ProjectManager
         public static void RecordUndo() {
             step++;
             Data copy = runtimeData.list.Copy();
-            undoData.Add(copy);
-        }
-        public static void Undo() {
-            step--;
-            if (step != 0)
+            if (step >= undoData.Count - 1)
             {
-                runtimeData.list = undoData[step - 1];
+                undoData.Add(copy);
+            }
+            else
+            {
+                undoData.Insert(step, copy);
             }
         }
+        public static void Undo() {
+            if (step > 0)
+            {
+                step--;
+                runtimeData.list = undoData[step];
+            }
+
+        }
         public static void ResetUndo() {
-            undoData = new List<Data>() {runtimeData.list};
+            undoData = new List<Data>() {runtimeData.list.Copy()};
             step = 0;
         }
         public static void Redo() {
             //handle bigger index out of range
-            if (step+1 < undoData.Count) {
+            if (step+1 <= undoData.Count-1) {
                 step++;
-            }
-            if (step != 0)
-            {
                 runtimeData.list = undoData[step];
             }
         }
-
     }
 }

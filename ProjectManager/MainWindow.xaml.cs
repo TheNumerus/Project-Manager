@@ -121,12 +121,12 @@ namespace ProjectManager
             //set label color
             Rectangle LabelNew = (Rectangle)(newCard.Children[2]);
             LabelColorNumbers.SetColorNumber(LabelNew, data.labelColor);
-            CardHierarchy.SetCardLevel(newCard, data.level);
+            CardHierarchy.SetCardLevel(cardContainer, data.level);
             LabelNew.Fill = new SolidColorBrush(LabelColorValues.barva[(int)data.labelColor]);
             //set margin according to hierarchy level
-            Thickness marginNew = newCard.Margin;
-            marginNew.Left = (CardHierarchy.GetCardLevel(newCard) - 1) * 20 + 5;
-            newCard.Margin = marginNew;
+            Thickness marginNew = cardContainer.Margin;
+            marginNew.Left = (CardHierarchy.GetCardLevel(cardContainer) - 1) * 20 + 5;
+            cardContainer.Margin = marginNew;
             //add card to list
             Seznam.Children.Add(cardContainer);
             //add hash of the created grid to data, so they bind together
@@ -141,7 +141,7 @@ namespace ProjectManager
                 if (CardHierarchy.GetCardLevel(card) > 1)
                 {
                     CardHierarchy.SetCardLevel(card, CardHierarchy.GetCardLevel(card) - 1);
-                    oldMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20;
+                    oldMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20 + 5;
                 }
                 card.Margin = oldMargin;
             }
@@ -158,7 +158,7 @@ namespace ProjectManager
                 if (CardHierarchy.GetCardLevel(card) < 4 &&  parent.cards.IndexOf(data) >= 1)
                 {
                     CardHierarchy.SetCardLevel(card, CardHierarchy.GetCardLevel(card) + 1);
-                    oldMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20;
+                    oldMargin.Left = (CardHierarchy.GetCardLevel(card) - 1) * 20 + 5;
                 }
                 card.Margin = oldMargin;
             }
@@ -443,10 +443,10 @@ namespace ProjectManager
                             File.Move(filename.Value, "DownloadedImages/" + filename.Value);
                         }
                     }
-                    TestImage.Source = new BitmapImage(new Uri(System.AppDomain.CurrentDomain.BaseDirectory + "/DownloadedImages/" + filename.Value));
+                    descImage.Source = new BitmapImage(new Uri(System.AppDomain.CurrentDomain.BaseDirectory + "/DownloadedImages/" + filename.Value));
                 }
                 else {
-                    TestImage.Source = null;
+                    descImage.Source = null;
                 }
             }
         }

@@ -3,7 +3,7 @@
                     xmlns:local="clr-namespace:ProjectManager"
                     xmlns:prop="clr-namespace:ProjectManager.Properties"
                     >
-    <SolidColorBrush x:Key="BackgroundColor" Color="White"/>
+    <SolidColorBrush x:Key="BackgroundColor" Color="#FFFCFCFC"/>
     <SolidColorBrush x:Key="CardColor" Color="White"/>
     <SolidColorBrush x:Key="AccentBackgroundBrush" Color="{Binding Source={x:Static prop:Settings.Default} , Path=AccentColor}"/>
     <SolidColorBrush x:Key="ComplementColor" Color="{Binding Source={x:Static prop:Settings.Default} , Path=ComplementCol}"/>
