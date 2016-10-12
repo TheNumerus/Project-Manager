@@ -18,7 +18,7 @@ namespace ProjectManager
         public static DatabaseInfo runtimeData = new DatabaseInfo();
         //variable for undo and redo
         public static List<Data> undoData = new List<Data>();
-        public static int step = -1;
+        public static int step = 0;
 
         //load data to variable
         public static bool Load()

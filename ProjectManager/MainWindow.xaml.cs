@@ -35,11 +35,13 @@ namespace ProjectManager
         public MainWindow()
         {
             InitializeComponent();
+            //main card is invisible, so user can't change it
+            ZakladniKarta.Visibility = Visibility.Collapsed;
             Border newCard = new Border();
             CreateCard(out newCard);
             Seznam.Children.Add(newCard);
-            //main card is invisible, so user can't change it
-            ZakladniKarta.Visibility = Visibility.Collapsed;
+            AddCardInfo(newCard);
+            RuntimeData.Generate(Seznam,ProjectName);
             //if user wants, app can load file on start
             if (Properties.Settings.Default.LoadOnStart) {
                 DeleteAllCards();
