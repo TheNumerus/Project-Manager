@@ -202,7 +202,7 @@ namespace ProjectManager
 
         private void WriteButton_Click(object sender, RoutedEventArgs e)
         {
-            //RuntimeData.Generate(Seznam,ProjectName);
+            RuntimeData.Generate(Seznam,ProjectName);
             RuntimeData.Save();
         }
 
@@ -302,18 +302,21 @@ namespace ProjectManager
         }
         public void MoveCardDown(Border card) {
             int index = Seznam.Children.IndexOf(card);
-            Seznam.Children.RemoveAt(index);
-            //handle last card
-            if (index != Seznam.Children.Count)
+            if (index < Seznam.Children.Count && index > 0)
             {
-                Seznam.Children.Insert(index + 1, card);
+                Seznam.Children.RemoveAt(index);
+                //handle last card
+                if (index != Seznam.Children.Count)
+                {
+                    Seznam.Children.Insert(index + 1, card);
+                }
+                else
+                {
+                    Seznam.Children.Insert(index, card);
+                }
+                SortAllCards(Seznam);
+                RuntimeData.Generate(Seznam, ProjectName);
             }
-            else
-            {
-                Seznam.Children.Insert(index, card);
-            }
-            SortAllCards(Seznam);
-            RuntimeData.Generate(Seznam, ProjectName);
         }
         private void MoveCardUp_Event(object sender, RoutedEventArgs e)
         {
@@ -350,6 +353,7 @@ namespace ProjectManager
                 {
                     GenerateFromData(RuntimeData.runtimeData.list);
                     ProjectName.Text = RuntimeData.runtimeData.list.name;
+                    Properties.Settings.Default.Save();
                 }
             }
             SetWindowName();
@@ -361,6 +365,7 @@ namespace ProjectManager
             savedia.Filter = "Database files (*.xml)|*.xml|All files (*.*)|*.*";
             if (savedia.ShowDialog() == true) {
                 Properties.Settings.Default.PathToFile = savedia.FileName;
+                Properties.Settings.Default.Save();
                 RuntimeData.Save();
             }
             SetWindowName();
@@ -408,6 +413,7 @@ namespace ProjectManager
             {
                 Grid Card = (Grid)CardContainer.Child;
                 ((TextBox)(Card.Children[0])).Text = nameBox.Text;
+                RuntimeData.Generate(Seznam, ProjectName);
             }
         }
         //set new label color in window and update card label
@@ -417,6 +423,7 @@ namespace ProjectManager
             LabelColorNumbers.LabelColorChange(LabelRect, 1);
             LabelColorNumbers.LabelColorChange((Rectangle)(Card.Children[2]), 1);
             attachedData.labelColor = LabelColorNumbers.GetColorNumber(LabelRect);
+            RuntimeData.Generate(Seznam, ProjectName);
         }
 
         private void DescChanged_Event(object sender, TextChangedEventArgs e)
@@ -446,6 +453,7 @@ namespace ProjectManager
                         }
                     }
                     descImage.Source = new BitmapImage(new Uri(System.AppDomain.CurrentDomain.BaseDirectory + "/DownloadedImages/" + filename.Value));
+                    RuntimeData.Generate(Seznam, ProjectName);
                 }
                 else {
                     descImage.Source = null;
