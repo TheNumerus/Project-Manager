@@ -16,12 +16,12 @@ namespace ProjectManager
         public DatabaseInfo(string newName = "New name") {
             name = newName;
             versionApp = Properties.Settings.Default.VersionNumber;
-            versionDB = "1";
+            versionDB = "2";
             list = new Data();
         }
         public DatabaseInfo() {
             versionApp = Properties.Settings.Default.VersionNumber;
-            versionDB = "1";
+            versionDB = "2";
             list = new Data();
         }
     }

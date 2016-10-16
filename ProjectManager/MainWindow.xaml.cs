@@ -45,7 +45,7 @@ namespace ProjectManager
             //if user wants, app can load file on start
             if (Properties.Settings.Default.LoadOnStart) {
                 DeleteAllCards();
-                if (!RuntimeData.Load())
+                if (!RuntimeData.LoadJSON())
                 {
                     newCard = new Border();
                     CreateCard(out newCard);
@@ -187,7 +187,7 @@ namespace ProjectManager
         private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
             DeleteAllCards();
-            if (!RuntimeData.Load())
+            if (!RuntimeData.LoadJSON())
             {
                 Border newCard = new Border();
                 CreateCard(out newCard);
@@ -203,7 +203,7 @@ namespace ProjectManager
         private void WriteButton_Click(object sender, RoutedEventArgs e)
         {
             RuntimeData.Generate(Seznam,ProjectName);
-            RuntimeData.Save();
+            RuntimeData.SaveJSON();
         }
 
         private void DeleteCard(object sender, RoutedEventArgs e)
@@ -338,12 +338,12 @@ namespace ProjectManager
         private void OpenButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Database files (*.xml)|*.xml|All files (*.*)|*.*";
+            openFileDialog.Filter = "Database files (*.json)|*.json|Old database files (*.xml)|*.xml|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
                 Properties.Settings.Default.PathToFile = openFileDialog.FileName;
                 DeleteAllCards();
-                if (!RuntimeData.Load())
+                if (!RuntimeData.LoadJSON() || RuntimeData.runtimeData.list.cards == null)
                 {
                     Border newCard = new Border();
                     CreateCard(out newCard);
@@ -362,11 +362,11 @@ namespace ProjectManager
         private void WriteAsButton_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog savedia = new SaveFileDialog();
-            savedia.Filter = "Database files (*.xml)|*.xml|All files (*.*)|*.*";
+            savedia.Filter = "Database files (*.json)|*.json|All files (*.*)|*.*";
             if (savedia.ShowDialog() == true) {
                 Properties.Settings.Default.PathToFile = savedia.FileName;
                 Properties.Settings.Default.Save();
-                RuntimeData.Save();
+                RuntimeData.SaveJSON();
             }
             SetWindowName();
         }

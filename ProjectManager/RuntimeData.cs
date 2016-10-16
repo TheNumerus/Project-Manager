@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using System.Windows.Shapes;
 using System.Windows.Controls;
 using System.Windows;
+using Newtonsoft.Json;
 
 namespace ProjectManager
 {
@@ -20,8 +21,8 @@ namespace ProjectManager
         public static List<Data> undoData = new List<Data>();
         public static int step = 0;
 
-        //load data to variable
-        public static bool Load()
+        //obsolete method for loading data
+        public static bool LoadXML()
         {
             runtimeData = new DatabaseInfo();
             runtimeData.list = new Data();
@@ -71,7 +72,8 @@ namespace ProjectManager
                 runtimeData.list = new Data();
                 return false;
             }
-            catch (System.InvalidCastException) {
+            catch (System.InvalidCastException)
+            {
                 ErrorWindow errorwindow = new ErrorWindow();
                 errorwindow.Title = "Database Error";
                 errorwindow.ErrorMessage.Text = "Error! This database file is obsolete.";
@@ -83,7 +85,8 @@ namespace ProjectManager
                 return false;
             }
             //handle empty file
-            if (runtimeData == null) {
+            if (runtimeData == null)
+            {
                 runtimeData = new DatabaseInfo();
                 runtimeData.list = new Data();
             }
@@ -92,6 +95,70 @@ namespace ProjectManager
             databaze.Close();
             return true;
         }
+
+        public static bool LoadJSON()
+        {
+            runtimeData = new DatabaseInfo();
+            runtimeData.list = new Data();
+            String path = Properties.Settings.Default.PathToFile;
+            //load file
+            String json;
+            try
+            {
+                json = File.ReadAllText(path);
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                ErrorWindow errorwindow = new ErrorWindow();
+                errorwindow.Title = "File doesn't exist.";
+                errorwindow.ErrorMessage.Text = "Error! File does not exist.";
+                errorwindow.Show();
+                runtimeData = new DatabaseInfo();
+                runtimeData.list = new Data();
+                return false;
+            }
+            catch (System.UnauthorizedAccessException)
+            {
+                ErrorWindow errorwindow = new ErrorWindow();
+                errorwindow.Title = "Insufficient rights";
+                errorwindow.ErrorMessage.Text = "Error! App has insufficient rights to open this file. Please launch this app as admin.";
+                errorwindow.Show();
+                runtimeData = new DatabaseInfo();
+                runtimeData.list = new Data();
+                return false;
+            }
+            try
+            {
+                runtimeData = JsonConvert.DeserializeObject<DatabaseInfo>(json);
+            }
+            catch(JsonReaderException) {
+                if (LoadXML()) {
+                    ErrorWindow errorwindow = new ErrorWindow();
+                    errorwindow.Title = "JSON Error";
+                    errorwindow.ErrorMessage.Text = "This database is being converted to newer format.";
+                    errorwindow.Show();
+                }
+                else {
+                    ErrorWindow errorWindow = new ErrorWindow();
+                    errorWindow.Title = "JSON Error";
+                    errorWindow.ErrorMessage.Text = "Error! This database file is corrupted.";
+                    errorWindow.Show();
+                    runtimeData = new DatabaseInfo();
+                    runtimeData.list = new Data();
+                    return false;
+                }
+                //handle empty file
+                if (runtimeData == null)
+                {
+                    runtimeData = new DatabaseInfo();
+                    runtimeData.list = new Data();
+                }
+                RecordUndo();
+            }
+            runtimeData.versionDB = "2";
+            return true;
+        }
+
         //method that generates data structure
         public static void Generate(StackPanel List, TextBox ProjectName) {
             //handle empty runtime data
@@ -148,28 +215,14 @@ namespace ProjectManager
             //here we replace old data with new data
             runtimeData.list = runtimeDataNew;
         }
-        public static void Save() {
+        public static void SaveJSON()
+        {
             String path = Properties.Settings.Default.PathToFile;
-            FileStream database;
-            //handle missing rigths to save file
-            try
-            {
-                database = File.Open(path, FileMode.Create);
-            }
-            catch (System.UnauthorizedAccessException)
-            {
-                ErrorWindow errorwindow = new ErrorWindow();
-                errorwindow.Title = "Insufficent rights";
-                errorwindow.ErrorMessage.Text = "Error! Program has insufficent rights to save database.";
-                errorwindow.Show();
-                return;
-            }
-            StreamWriter sw = new StreamWriter(database);
-            XmlSerializer xs = new XmlSerializer(typeof(DatabaseInfo));
-            xs.Serialize(sw, runtimeData);
-            sw.Close();
-            database.Close();
+            string json;
+            json = JsonConvert.SerializeObject(runtimeData);
+            File.WriteAllText(path, json);
         }
+
         //recursive searching in data structure by element in list
         public static Data FindDataParent(Data root, Data ChildOfElement)
         {
